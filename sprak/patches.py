@@ -4,7 +4,7 @@ Tryout some translation things
 from django.utils import translation
 from django.utils.functional import lazy
 from django.utils.html import mark_safe
-from models import THREAD_LOCAL_STORAGE, EDIT_MODE
+from models import (THREAD_LOCAL_STORAGE, EDIT_MODE, MESSAGES)
 
 original = translation.ugettext
 
@@ -12,8 +12,13 @@ def _new_ugettext(message):
     mode = getattr(THREAD_LOCAL_STORAGE, EDIT_MODE, False)
 
     if mode:
+        messages = getattr(THREAD_LOCAL_STORAGE, MESSAGES, [])
+        messages.append(message)
+        setattr(THREAD_LOCAL_STORAGE, MESSAGES, messages)
+
         #return mark_safe(u'<span contenteditable="true" class="sprak-msg" data="">' + original(message) + '</span>')
-        return mark_safe(u"<span contenteditable='true' class='sprak-msg' data=''>" + original(message) + "</span>")
+        #return mark_safe(u"<span contenteditable='true' class='sprak-msg' data=''>" + original(message) + "</span>")
+        return original(message)
     else:
         return original(message)
 
