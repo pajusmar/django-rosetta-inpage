@@ -60,7 +60,7 @@ class TranslateMiddleware(object):
 
 def messages_iterator(list):
     for msg in list:
-        yield escape(encode(msg))
+        yield encode(msg)
 
 def encode(message):
     try:
@@ -69,6 +69,7 @@ def encode(message):
         return message.encode('utf-8')
 
 def escape(message):
+    #return message.replace('<', '&lt;').replace('>', '&gt;')
     return message.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;').replace('"', '&quot;').replace("'", '&#39;')
 
 
