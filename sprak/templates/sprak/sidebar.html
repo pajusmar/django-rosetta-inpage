@@ -1,0 +1,13 @@
+{% load i18n %}
+<div class="sprak-sidebar" id="sprak-sidebar">
+    <h1>Translate: EN &raquo; NL</h1>
+    <ul>
+        {% for msg in messages %}
+        <li><a href="javascript:void(0)">{{ msg }}</a></li>
+        {% endfor %}
+    </ul>
+</div>
+<div class="sprak-form" id="sprak-form">Translate form</div>
+<script src="{{ STATIC_URL }}sprak/js/translate.js"></script>
+<link href="{{ STATIC_URL }}sprak/css/translate.css" rel="stylesheet"/>
+

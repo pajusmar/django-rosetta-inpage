@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 from django.conf import settings
+from django.template.loader import render_to_string
+from django.template import RequestContext
 from django.utils.html import mark_safe
 from django.utils import html
 from models import (THREAD_LOCAL_STORAGE, EDIT_MODE, MESSAGES)
@@ -12,7 +14,8 @@ class TranslateMiddleware(object):
         pass
 
     def is_edit_mode(self, request):
-        return request.GET.get('translate', 'False').lower() == 'true'
+        #return request.GET.get('translate', 'False').lower() == 'true' and request.user.is_staff
+        return request.user.is_staff
 
     def process_request(self, request):
         """
@@ -20,8 +23,9 @@ class TranslateMiddleware(object):
         :param request:
         :return:
         """
-        if self.is_edit_mode(request) and request.user.is_staff:
+        if self.is_edit_mode(request):
             setattr(THREAD_LOCAL_STORAGE, EDIT_MODE, True)
+            setattr(THREAD_LOCAL_STORAGE, MESSAGES, set())
         else:
             setattr(THREAD_LOCAL_STORAGE, EDIT_MODE, False)
         return None
@@ -45,25 +49,22 @@ class TranslateMiddleware(object):
         if index == -1:
             return response
 
-        html = ['<script src="' + settings.STATIC_URL + 'sprak/js/translate.js"></script>\n',
-                '<link href="' + settings.STATIC_URL + 'sprak/css/translate.css" rel="stylesheet"/>\n',
-                '<div class="sprak-toolbar"><ul>']
+        messages = getattr(THREAD_LOCAL_STORAGE, MESSAGES, set())
+        html = render_to_string("sprak/sidebar.html",
+            {'messages': messages_iterator(messages)},
+            context_instance=RequestContext(request))
 
-        messages = getattr(THREAD_LOCAL_STORAGE, MESSAGES, [])
-        for msg in messages:
-            html.append('<li>')
-            html.append(encode(msg))
-            html.append('</li>')
-
-        html.append('</ul></div>')
-
-        response.content =  content[:index] + "".join(html) + content[index:]
+        response.content = content[:index] + html.encode("utf-8") + content[index:]
+        #response.content =  unicode(s)
         return response
 
+def messages_iterator(list):
+    for msg in list:
+        yield escape(encode(msg))
 
 def encode(message):
     try:
-        return escape(message.decode().encode('utf-8'))
+        return message.decode().encode('utf-8')
     except UnicodeEncodeError:
         return message.encode('utf-8')
 

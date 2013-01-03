@@ -14,7 +14,7 @@
     left:0;
 }
 
-.sprak-toolbar{
+.sprak-sidebar{
     color:#fff;
     background: #111;
     width: 300px;
@@ -27,4 +27,89 @@
     border-right: 1px solid #000;
     overflow-y: scroll;
     overflow-x: hidden;
+    padding-top: 50px;
 }
+
+.sprak-sidebar h1{
+    border-bottom: 1px solid #333;
+    font-size: 20px;
+    text-transform: none;
+    font-weight: bold;
+    padding:10px;
+    font-family: Helvetica,arial,sans-serif;
+    position: fixed;
+    top:0;
+    background-color:rgba(0,0,0,0.7);
+    width: 275px;
+}
+
+.sprak-sidebar a{
+    color:white;
+    display: block;
+    padding: 7px;
+    text-decoration: none;
+    border-bottom: 1px solid #333;
+    border-top: 1px solid #000;
+}
+
+.sprak-sidebar a:hover{
+    background-color: rgba(255,255,255,0.3);
+}
+
+.sprak-sidebar .active{
+    color:#BA1616;
+    background-color: white !important;
+}
+
+.sprak-sidebar ul{
+    list-style: none;
+    padding:0;
+    margin:0;
+}
+
+.sprak-form{
+    position:fixed;
+    width:400px;
+    height:150px;
+    top:0;
+    right: 0;
+    z-index: 100000001;
+    background-color: white;
+    border:1px solid #000;
+    display: none;
+    border-left-width: 0;
+}
+
+
+/* Let's get this party started */
+.sprak-sidebar::-webkit-scrollbar {
+    width: 5px;
+}
+
+.sprak-sidebar:hover::-webkit-scrollbar {
+    width: 15px;
+}
+
+.sprak-sidebar:hover{
+    width: 310px;
+}
+
+/* Track */
+.sprak-sidebar:hover::-webkit-scrollbar-track {
+    background-color: rgba(255,255,255,0.3);
+}
+
+.sprak-sidebar::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.2);
+    background-color: rgba(255,255,255,0.1);
+}
+
+/* Handle */
+.sprak-sidebar::-webkit-scrollbar-thumb {
+    -webkit-border-radius: 5px;
+    border-radius: 5px;
+    /*background: rgba(255,0,0,0.8);*/
+    background: #BA1616;
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5);
+}
+

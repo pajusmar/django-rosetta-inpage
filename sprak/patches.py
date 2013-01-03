@@ -12,8 +12,8 @@ def _new_ugettext(message):
     mode = getattr(THREAD_LOCAL_STORAGE, EDIT_MODE, False)
 
     if mode:
-        messages = getattr(THREAD_LOCAL_STORAGE, MESSAGES, [])
-        messages.append(message)
+        messages = getattr(THREAD_LOCAL_STORAGE, MESSAGES)
+        messages.add(message)
         setattr(THREAD_LOCAL_STORAGE, MESSAGES, messages)
 
         #return mark_safe(u'<span contenteditable="true" class="sprak-msg" data="">' + original(message) + '</span>')
