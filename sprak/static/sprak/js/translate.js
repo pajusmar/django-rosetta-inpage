@@ -43,7 +43,7 @@ $("#sprak-form").click(function(e){
 });
 
 $(document).click(function(e){
-    console.log($(e.target).is(".sprak-form"));
+    //console.log($(e.target).is(".sprak-form"));
     Sprak.hideForm();
     $("#sprak-form").hide();
 });
@@ -55,7 +55,7 @@ $("span[contenteditable]").click(function(e){
     var text = $(this).html();
     var pos = $(this).position();
 
-    console.log("Text: " + text + ", " + JSON.stringify(pos));
+    //console.log("Text: " + text + ", " + JSON.stringify(pos));
 
     /*
     $.getJSON("https://www.googleapis.com/language/translate/v2?key=AIzaSyDL6a0wb7JAf8Aj2ud51j4BcssPBVmaWr4&source=nl&target=en&q=" + text + "&callback=?",{},
