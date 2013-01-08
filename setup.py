@@ -1,18 +1,18 @@
 #!/usr/bin/env python
 from distutils.core import setup
-import sprak
+import sparky_client
 
 setup(
-    name='django-sprak',
-    version=sprak.__version__,
+    name='sparky_client',
+    version=sparky_client.__version__,
     description='Translate Django messages inline with a cache and database backend',
     author='VikingCo NV',
-    author_email='jef.geskens@mobilevikings.com',
-    url='http://github.com/citylive/django-sprak/',
-    packages=['sprak'],
+    author_email='maarten.huijsmans@mobilevikings.com',
+    url='http://github.com/citylive/sparky-client/',
+    packages=['sparky_client'],
     license='BSD',
     include_package_data = True,
-    package_data = {'sprak': ['templates/sprak/*'],},
+    package_data = {'spark_client': ['templates/sparky_client/*'],},
     zip_safe = False,
     classifiers = [
         'Development Status :: 1 - Alpha',

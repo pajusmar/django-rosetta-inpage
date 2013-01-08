@@ -1,10 +1,7 @@
 # -*- coding: utf-8 -*-
-from django.conf import settings
 from django.template.loader import render_to_string
 from django.template import RequestContext
-from django.utils.html import mark_safe
-from django.utils import html
-from models import (THREAD_LOCAL_STORAGE, EDIT_MODE, MESSAGES)
+from sparky_client.models import (THREAD_LOCAL_STORAGE, EDIT_MODE, MESSAGES)
 
 class TranslateMiddleware(object):
     """

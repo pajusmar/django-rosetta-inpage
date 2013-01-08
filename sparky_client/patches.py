@@ -3,8 +3,7 @@ Tryout some translation things
 """
 from django.utils import translation
 from django.utils.functional import lazy
-from django.utils.html import mark_safe
-from models import (THREAD_LOCAL_STORAGE, EDIT_MODE, MESSAGES)
+from sparky_client.models import (THREAD_LOCAL_STORAGE, EDIT_MODE, MESSAGES)
 
 original = translation.ugettext
 
