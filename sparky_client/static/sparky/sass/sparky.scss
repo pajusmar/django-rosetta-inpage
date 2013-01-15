@@ -140,7 +140,17 @@ $z-index: 100000000;
   box-shadow: $shadow;
 }
 
+span[contenteditable='false']:hover{
+  -webkit-user-modify: read;
+  word-wrap: break-word;
+  -webkit-nbsp-mode: space;
+  -webkit-line-break: after-white-space;
+  outline: -webkit-focus-ring-color auto 5px;
 
+  color:black;
+  background:rgba(255,255,255,0.8);
+  cursor:text;
+}
 
 
 

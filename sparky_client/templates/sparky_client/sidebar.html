@@ -1,9 +1,10 @@
 {% load i18n %}
 <div class="sprak-sidebar" id="sprak-sidebar">
     <h1>Translate: EN &raquo; NL</h1>
+    <p>Progress: 20 / {{ count }} (53%)</p>
     <ul>
         {% for msg in messages %}
-        <li><a href="javascript:void(0)">{{ msg }}</a></li>
+        <li><a href="javascript:void(0)" id="s-{{ msg.1 }}">{{ msg.0 }}</a></li>
         {% endfor %}
     </ul>
 
@@ -12,6 +13,6 @@
 <div class="sprak-form" id="sprak-form">Translate form</div>
 
 <!-- Hello source code browser-->
-<script src="{{ STATIC_URL }}sparky_client/js/sparky.js"></script>
-<link href="{{ STATIC_URL }}sparky_client/css/sparky.css" rel="stylesheet"/>
+<script src="{{ STATIC_URL }}sparky/js/sparky.js"></script>
+<link href="{{ STATIC_URL }}sparky/css/sparky.css" rel="stylesheet"/>
 

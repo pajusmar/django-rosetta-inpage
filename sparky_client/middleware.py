@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from django.template.loader import render_to_string
 from django.template import RequestContext
+from sparky_client import hash
 from sparky_client.models import (THREAD_LOCAL_STORAGE, EDIT_MODE, MESSAGES)
 
 class TranslateMiddleware(object):
@@ -29,12 +30,13 @@ class TranslateMiddleware(object):
 
     def process_response(self, request, response):
         """
+        Only add the translation html if the status code is 200
 
         :param request:
         :param response:
         :return:
         """
-        if self.is_edit_mode(request):
+        if self.is_edit_mode(request) and response.status_code == 200:
             return self.insert_html(request, response)
 
         return response
@@ -47,9 +49,12 @@ class TranslateMiddleware(object):
             return response
 
         messages = getattr(THREAD_LOCAL_STORAGE, MESSAGES, set())
-        html = render_to_string("sprak/sidebar.html",
-            {'messages': messages_iterator(messages)},
-            context_instance=RequestContext(request))
+        vars = {
+            'messages': messages_iterator(messages),
+            'count': len(messages)
+        }
+
+        html = render_to_string("sparky_client/sidebar.html", vars, context_instance=RequestContext(request))
 
         response.content = content[:index] + html.encode("utf-8") + content[index:]
         #response.content =  unicode(s)
@@ -57,7 +62,7 @@ class TranslateMiddleware(object):
 
 def messages_iterator(list):
     for msg in list:
-        yield encode(msg)
+        yield (encode(msg), hash(msg))
 
 def encode(message):
     try:

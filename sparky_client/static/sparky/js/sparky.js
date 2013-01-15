@@ -2,7 +2,9 @@
  * Functions for the translations
  *
  **/
-var Sprak = {};
+var Sprak = {
+    'root': '/sparky_client'
+};
 
 Sprak.init = function(){
 
@@ -13,14 +15,15 @@ Sprak.init = function(){
  * @param [e]
  */
 Sprak.hideForm = function(e){
-    $("#sprak-form").hide();
-    $("#sprak-sidebar a").removeClass("active");
+    //$("#sprak-form").hide();
+    //$("#sprak-sidebar a").removeClass("active");
 };
 
 
 
 
 $("#sprak-sidebar a").click(function(e){
+    console.log('Hierzo');
     var pos = $(this).position();
     var width = $(this).outerWidth();
     var form = $("#sprak-form");
@@ -30,6 +33,7 @@ $("#sprak-sidebar a").click(function(e){
         'top': pos['top'],
         'left': pos['left'] + width
     });
+    console.log("WW = " + JSON.stringify(pos));
 
     $("#sprak-sidebar a").removeClass("active");
     $(this).addClass("active");
@@ -45,7 +49,7 @@ $("#sprak-form").click(function(e){
 $(document).click(function(e){
     //console.log($(e.target).is(".sprak-form"));
     Sprak.hideForm();
-    $("#sprak-form").hide();
+    //$("#sprak-form").hide();
 });
 
 
@@ -54,6 +58,14 @@ $(document).click(function(e){
 $("span[contenteditable]").click(function(e){
     var text = $(this).html();
     var pos = $(this).position();
+    var id = $(this).attr('id');
+
+    console.log("Pos = " + JSON.stringify(pos) + ", " + id);
+    $('#s-' + id).trigger('click');
+    //$('#s-4a6a59aa75d28c79e8e9485d5019ddd9').trigger('click');
+    console.log('Jawel');
+
+
 
     //console.log("Text: " + text + ", " + JSON.stringify(pos));
 
@@ -69,5 +81,8 @@ function(data){
 
 $("a").click(function(e)
 {
+    var id = $(this).attr('id');
+
+    console.log("DDD = " + id);
     //e.preventDefault();
 });
