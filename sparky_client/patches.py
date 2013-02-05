@@ -19,8 +19,8 @@ def _new_ugettext(message):
 
         #print "String = " + repr(message) + ", " + str(hash(message))
         id = hash(message)
-        return mark_safe('<span contenteditable="false" id="' + id + '">' + original(message) + '</span>')
-        #return original(message)
+        #return mark_safe('<span contenteditable="false" id="' + id + '">' + original(message) + '</span>')
+        return original(message)
     else:
         return original(message)
 

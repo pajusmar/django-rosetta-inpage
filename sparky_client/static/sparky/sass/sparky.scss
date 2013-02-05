@@ -40,6 +40,7 @@ $z-index: 100000000;
   overflow-y: scroll;
   overflow-x: hidden;
   padding-top: 45px;
+  padding-bottom: 200px;
   font-family: $font-family;
 
   h1{
@@ -82,7 +83,7 @@ $z-index: 100000000;
     margin:0;
   }
 
-  li span{
+  li code{
     display: none;
   }
 
@@ -126,10 +127,10 @@ $z-index: 100000000;
   }
 }
 
-.sprak-form{
+.sparky-form{
   position:fixed;
-  width:400px;
-  height:150px;
+  width:500px;
+  height:200px;
   top:0;
   right: 0;
   z-index: ($z-index + 1);
@@ -137,6 +138,7 @@ $z-index: 100000000;
   border:1px solid #000;
   display: none;
   border-left-width: 0;
+  padding:10px;
 
   $shadow:5px 5px 20px rgba(0, 0, 0, .3);
   -moz-box-shadow: $shadow;

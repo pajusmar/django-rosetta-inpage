@@ -1,7 +1,9 @@
-import json
 import logging
 import simplejson
+
+from django.conf import settings
 from django.http import HttpResponse
+from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import View
 from django.utils.translation import trans_real
 
@@ -30,63 +32,37 @@ class MessageView(View):
     def get(self, request):
         source = request.GET.get('source', '')
         target_locale = request.GET.get('lang', '')
-
         result = trans_real.ugettext(source)
-        print "Banaan = ", str(result), ", ", str(target_locale)
 
         return {
             'foo': 'bar',
-            'test': 'hierzo',
+            'test': '42',
         }
 
+    @csrf_exempt
     @json_rsponse
     def post(self, request):
         source = request.POST.get('source', '')
         target_locale = request.POST.get('lang', '')
         target_msg = request.POST.get('msg', '')
-        print "Banaan = ", str(source), ", ", str(target_locale), ", ", str(target_msg)
+        print "Post 1 = ", str(source), ", ", str(target_locale), ", ", str(target_msg)
+        print "Post 1.1 = ", str(settings.SOURCE_LANGUAGE_CODE), ", ", str(request.LANGUAGE_CODE)
+
+        from rosetta import storage
+        from rosetta.poutil import find_pos
+        from rosetta.polib import pofile
+
+        # file_ = find_pos(langid, project_apps=project_apps, django_apps=django_apps, third_party_apps=third_party_apps)[int(idx)]
+        stor = storage.get_storage(request)
+        pos = find_pos('nl-nl', third_party_apps=True)
+        print "Post 2 = ", repr(stor), ", ", repr(pos)
+
+        for p in pos:
+            file = pofile(p)
+            msg = file.find(source)
+            print "Msg = ", repr(msg)
 
         return {
             'status': 'ok',
         }
 
-
-
-
-'''
-@csrf_exempt
-@json_response
-@require_POST
-def create_transaction_type(request):
-    """
-    Create a new transaction type. You should pass `name`, `template_en`, `template_nl`, and
-    `template_fr` as POST parameters.
-    """
-    name = request.POST.get('name', '')
-
-    if not name:
-        return HttpResponse('No name given', status=HTTP_BAD_REQUEST)
-
-    if TransactionType.objects.filter(name=name):
-        return HttpResponse('TransactionType with this name already exists', status=HTTP_CONFLICT)
-
-    template_texts = {}
-
-    for lang in dict(settings.LANGUAGES).keys():
-        param_name = 'template_' + lang
-        template_text = request.POST.get(param_name)
-
-        if not template_text:
-            return HttpResponse('Missing %s parameter' % param_name, status=HTTP_BAD_REQUEST)
-
-        try:
-            Template(template_text)
-        except TemplateSyntaxError:
-            return HttpResponse('%s has invalid syntax' % param_name, status=HTTP_BAD_REQUEST)
-
-        template_texts[param_name] = template_text
-
-    TransactionType.objects.create(name=name, **template_texts)
-
-    return { }
-'''

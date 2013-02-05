@@ -2,6 +2,8 @@
 from django.conf import settings
 from django.template.loader import render_to_string
 from django.template import RequestContext
+from django.utils.html import mark_safe
+
 from sparky_client import hash
 from sparky_client.models import (THREAD_LOCAL_STORAGE, EDIT_MODE, MESSAGES)
 
@@ -37,7 +39,7 @@ class TranslateMiddleware(object):
         :param response:
         :return:
         """
-        if self.is_edit_mode(request) and response.status_code == 200:
+        if self.is_edit_mode(request) and response.status_code == 200 and not request.path.startswith('/rosetta'):
             return self.insert_html(request, response)
 
         return response
@@ -45,7 +47,6 @@ class TranslateMiddleware(object):
     def insert_html(self, request, response):
         content = response.content
         index = content.lower().find('</body>')
-        print "Boehja: ", str(settings.SOURCE_LANGUAGE_CODE), ", ", str(request.LANGUAGE_CODE)
 
         if index == -1:
             return response
@@ -69,7 +70,12 @@ def messages_iterator(list):
     for msg in list:
         # Use the original translate function instead of the patched one
         from sparky_client.patches import original as _
-        yield (encode(msg), hash(msg), _(msg))
+        yield {
+            'show': encode(msg),
+            'hash': hash(msg),
+            'source': mark_safe(msg), # the source message
+            'msg': mark_safe(_(msg)), # the translated message
+        }
 
 
 def encode(message):

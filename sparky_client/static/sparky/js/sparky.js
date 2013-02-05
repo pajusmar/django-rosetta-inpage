@@ -6,6 +6,9 @@ var Sparky = {
     'root': '/sparky_client'
 };
 
+/**
+ *
+ */
 Sparky.init = function(){
 
 };
@@ -40,13 +43,19 @@ Sparky.moveCursorToEnd = function(obj){
 
 
 
+
+
+
 $("#sprak-sidebar a").click(function(e){
-    console.log('Hierzo');
     var pos = $(this).position();
     var width = $(this).outerWidth();
-    var form = $("#sprak-form");
+    var form = $("#sparky-form");
+
+    var input = form.find('input[name="source"]');
     var textarea = form.find('textarea');
-    var span = $(this).parent().find('span');
+
+    var source = $(this).parent().find('code[type="source"]');
+    var msg = $(this).parent().find('code[type="msg"]');
 
     form.show();
     form.css({
@@ -54,19 +63,27 @@ $("#sprak-sidebar a").click(function(e){
         'left': pos['left'] + width
     });
 
+    input.val(source.html());
     textarea.focus();
-    textarea.val(span.html());
+    textarea.val(msg.html());
     Sparky.moveCursorToEnd(textarea);
 
 
     $("#sprak-sidebar a").removeClass("active");
     $(this).addClass("active");
     e.stopPropagation();
+
+    /*
+     source = request.POST.get('source', '')
+     target_locale = request.POST.get('lang', '')
+     target_msg = request.POST.get('msg', '')
+     print "Banaan = ", str(source), ", ", str(target_locale), ", ", str(target_msg)
+     */
 });
 
-$("#sprak-sidebar").scroll(Sprak.hideForm);
+$("#sprak-sidebar").scroll(Sparky.hideForm);
 
-$("#sprak-form").click(function(e){
+$("#sparky-form").click(function(e){
     e.stopPropagation();
 });
 
@@ -87,19 +104,6 @@ $("span[contenteditable]").click(function(e){
     console.log("Pos = " + JSON.stringify(pos) + ", " + id);
     $('#s-' + id).trigger('click');
     //$('#s-4a6a59aa75d28c79e8e9485d5019ddd9').trigger('click');
-    console.log('Jawel');
-
-
-
-    //console.log("Text: " + text + ", " + JSON.stringify(pos));
-
-    /*
-    $.getJSON("https://www.googleapis.com/language/translate/v2?key=AIzaSyDL6a0wb7JAf8Aj2ud51j4BcssPBVmaWr4&source=nl&target=en&q=" + text + "&callback=?",{},
-function(data){
-    console.log("json callback = " + JSON.stringify(data));
-    $("#google").html(data['data']['translations'][0]['translatedText']);
-    });
-    */
 });
 
 
@@ -118,6 +122,6 @@ $(document).ready(function(){
         'lang': 'nl',
         'msg': 'inloggen'
     }).done(function(data){
-            //alert(JSON.stringify(data));
+        //alert(JSON.stringify(data));
     });
 });
