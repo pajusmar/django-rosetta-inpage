@@ -17,7 +17,7 @@ def _new_ugettext(message):
         messages.add(message)
         setattr(THREAD_LOCAL_STORAGE, MESSAGES, messages)
 
-        print "String = " + repr(message) + ", " + str(hash(message))
+        #print "String = " + repr(message) + ", " + str(hash(message))
         id = hash(message)
         return mark_safe('<span contenteditable="false" id="' + id + '">' + original(message) + '</span>')
         #return original(message)
@@ -29,27 +29,4 @@ def patch_ugettext():
     translation.ugettext = _new_ugettext
     translation.ugettext_lazy = lazy(_new_ugettext, unicode)
 
-
-
-
-"""
-def patch():
-    print "The great patch of ugettext"
-
-    original = translation.ugettext
-    def _ugettext_patch(message):
-        print "Patch uget"
-        return "<span contenteditable='true'>" + original(message) + "</span>"
-    translation.ugettext = _ugettext_patch
-
-
-    #def do_translate(parser, token):
-    orig = trans_real.do_translate
-    def _do_translate(parser, token):
-        print "Trans trans " + str(token)
-        return "<span contenteditable='true'>" + orig(parser, token) + "</span>"
-    trans_real.do_translate = _do_translate
-
-
-"""
 

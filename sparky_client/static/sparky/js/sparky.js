@@ -2,11 +2,11 @@
  * Functions for the translations
  *
  **/
-var Sprak = {
+var Sparky = {
     'root': '/sparky_client'
 };
 
-Sprak.init = function(){
+Sparky.init = function(){
 
 };
 
@@ -14,10 +14,28 @@ Sprak.init = function(){
  *
  * @param [e]
  */
-Sprak.hideForm = function(e){
+Sparky.hideForm = function(e){
     //$("#sprak-form").hide();
     //$("#sprak-sidebar a").removeClass("active");
 };
+
+/**
+ * This is a nifty trick to place the cursor at the end of the text when the onfocus event is triggered
+ * onfocus="var val=this.value; this.value=''; this.value= val;"
+ * http://stackoverflow.com/questions/511088/use-javascript-to-place-cursor-at-end-of-text-in-text-input-element
+ *
+ * @param obj
+ */
+Sparky.moveCursorToEnd = function(obj){
+    var value = obj.val(); //store the value of the element
+    $(obj).focus().val(value);
+};
+
+
+
+
+
+
 
 
 
@@ -27,13 +45,19 @@ $("#sprak-sidebar a").click(function(e){
     var pos = $(this).position();
     var width = $(this).outerWidth();
     var form = $("#sprak-form");
+    var textarea = form.find('textarea');
+    var span = $(this).parent().find('span');
 
     form.show();
     form.css({
         'top': pos['top'],
         'left': pos['left'] + width
     });
-    console.log("WW = " + JSON.stringify(pos));
+
+    textarea.focus();
+    textarea.val(span.html());
+    Sparky.moveCursorToEnd(textarea);
+
 
     $("#sprak-sidebar a").removeClass("active");
     $(this).addClass("active");
@@ -85,4 +109,15 @@ $("a").click(function(e)
 
     console.log("DDD = " + id);
     //e.preventDefault();
+});
+
+
+$(document).ready(function(){
+    $.post('/sparky_client/ajax/message', {
+        'source': 'Login',
+        'lang': 'nl',
+        'msg': 'inloggen'
+    }).done(function(data){
+            //alert(JSON.stringify(data));
+    });
 });

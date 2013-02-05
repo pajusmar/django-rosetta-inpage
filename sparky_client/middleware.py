@@ -64,15 +64,20 @@ class TranslateMiddleware(object):
         #response.content =  unicode(s)
         return response
 
+
 def messages_iterator(list):
     for msg in list:
-        yield (encode(msg), hash(msg))
+        # Use the original translate function instead of the patched one
+        from sparky_client.patches import original as _
+        yield (encode(msg), hash(msg), _(msg))
+
 
 def encode(message):
     try:
         return message.decode().encode('utf-8')
     except UnicodeEncodeError:
         return message.encode('utf-8')
+
 
 def escape(message):
     #return message.replace('<', '&lt;').replace('>', '&gt;')

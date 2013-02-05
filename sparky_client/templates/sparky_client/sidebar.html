@@ -4,13 +4,13 @@
     <p>Progress: 20 / {{ count }} (53%)</p>
     <ul>
         {% for msg in messages %}
-        <li><a href="javascript:void(0)" id="s-{{ msg.1 }}">{{ msg.0 }}</a></li>
+        <li><a href="javascript:void(0)" id="s-{{ msg.1 }}">{{ msg.0 }}</a><span>{{ msg.2 }}</span></li>
         {% endfor %}
     </ul>
 
     <p>Woeha, finished!</p>
 </div>
-<div class="sprak-form" id="sprak-form">Translate form</div>
+<div class="sprak-form" id="sprak-form" style="padding:10px;">Translate form<br/><textarea cols="35" rows="3"></textarea></div>
 
 <!-- Hello source code browser-->
 <script src="{{ STATIC_URL }}sparky/js/sparky.js"></script>
