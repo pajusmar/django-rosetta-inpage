@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from django.conf import settings
 from django.template.loader import render_to_string
 from django.template import RequestContext
 from sparky_client import hash
@@ -44,6 +45,7 @@ class TranslateMiddleware(object):
     def insert_html(self, request, response):
         content = response.content
         index = content.lower().find('</body>')
+        print "Boehja: ", str(settings.SOURCE_LANGUAGE_CODE), ", ", str(request.LANGUAGE_CODE)
 
         if index == -1:
             return response
@@ -51,7 +53,9 @@ class TranslateMiddleware(object):
         messages = getattr(THREAD_LOCAL_STORAGE, MESSAGES, set())
         vars = {
             'messages': messages_iterator(messages),
-            'count': len(messages)
+            'count': len(messages),
+            'sparky_translate_from': str(settings.SOURCE_LANGUAGE_CODE.split('-')[0]),
+            'sparky_translate_to': str(request.LANGUAGE_CODE),
         }
 
         html = render_to_string("sparky_client/sidebar.html", vars, context_instance=RequestContext(request))

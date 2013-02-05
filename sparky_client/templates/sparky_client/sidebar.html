@@ -1,6 +1,6 @@
 {% load i18n %}
-<div class="sprak-sidebar" id="sprak-sidebar">
-    <h1>Translate: EN &raquo; NL</h1>
+<div class="sprak-sidebar" id="sprak-sidebar">{{banaan}}
+    <h1>Translate: {{sparky_translate_from|upper}} &raquo; {{sparky_translate_to|upper}}</h1>
     <p>Progress: 20 / {{ count }} (53%)</p>
     <ul>
         {% for msg in messages %}
