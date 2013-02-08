@@ -60,7 +60,7 @@ class MessageView(View):
         for p in pos:
             file = pofile(p)
             msg = file.find(source)
-            print "Msg = ", repr(msg)
+            print "Msg = ", repr(msg), ", ", str(p)
 
         return {
             'status': 'ok',
