@@ -1,0 +1,163 @@
+/**
+ * CSS for in-page translations
+ *
+ * @author	Maarten Huijsmans <maarten.huijsmans@mobilevikings.com>
+ */
+
+/* Variables
+=====================================*/
+$font-color-active: #BA1616;
+$font-family: Helvetica,arial,sans-serif;
+$sidebar-width: 350;
+$z-index: 100000000;
+
+/* Some beautiful CSS
+=====================================*/
+/*
+.sprak-notify{
+  position: fixed;
+  color: white;
+  padding: 5px 15px 5px 15px;
+  background-color: #960808;
+  z-index: 2001;
+
+  top:40px;
+  left:0;
+}
+*/
+
+.sprak-sidebar{
+  color:#fff;
+  background: #111;
+  width: ($sidebar-width) + px;
+  z-index: $z-index;
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  opacity: 1;
+  border-right: 1px solid #000;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  padding-top: 45px;
+  padding-bottom: 200px;
+  font-family: $font-family;
+
+  h1{
+    border-bottom: 1px solid #333;
+    font-size: 20px;
+    text-transform: none;
+    font-weight: bold;
+    font-family: $font-family;
+    padding:10px;
+    position: fixed;
+    top:0;
+    background-color:rgba(0,0,0,0.7);
+    width: ($sidebar-width - 33) + px;
+    color:$font-color-active;
+  }
+
+  a{
+    color:white;
+    display: block;
+    padding: 7px 10px 7px 10px;
+    text-decoration: none;
+    border-bottom: 1px solid #333;
+    border-top: 1px solid #000;
+    font-size:14px;
+    font-family: $font-family;
+
+    &:hover{
+      background-color: rgba(255,255,255,0.3);
+    }
+
+    &.active{
+      color: $font-color-active;
+      background-color: white !important;
+    }
+  }
+
+  ul{
+    list-style: none;
+    padding:0;
+    margin:0;
+  }
+
+  li code{
+    display: none;
+  }
+
+  p{
+    text-align: center;
+    padding: 10px;
+    margin: 0;
+    color: #666;
+    font-size: 14px;
+  }
+
+  &:hover{
+    //width: ($sidebar-width + 10) + px;
+  }
+
+  /* Let's get this party started */
+  &::-webkit-scrollbar {
+    width: 13px;
+  }
+
+  &:hover::-webkit-scrollbar {
+    //width: 15px;
+  }
+
+  /* Track */
+  &:hover::-webkit-scrollbar-track {
+    background-color: rgba(255,255,255,0.3);
+  }
+
+  &::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.2);
+    background-color: rgba(255,255,255,0.1);
+  }
+
+  /* Handle */
+  &::-webkit-scrollbar-thumb {
+    -webkit-border-radius: 10px;
+    border-radius: 10px;
+    background: $font-color-active;
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5);
+  }
+}
+
+.sparky-form{
+  position:fixed;
+  width:500px;
+  height:200px;
+  top:0;
+  right: 0;
+  z-index: ($z-index + 1);
+  background-color: white;
+  border:1px solid #000;
+  display: none;
+  border-left-width: 0;
+  padding:10px;
+
+  $shadow:5px 5px 20px rgba(0, 0, 0, .3);
+  -moz-box-shadow: $shadow;
+  -webkit-box-shadow: $shadow;
+  box-shadow: $shadow;
+}
+
+span[contenteditable='false']:hover{
+  -webkit-user-modify: read;
+  word-wrap: break-word;
+  -webkit-nbsp-mode: space;
+  -webkit-line-break: after-white-space;
+  outline: -webkit-focus-ring-color auto 5px;
+
+  color:black;
+  background:rgba(255,255,255,0.8);
+  cursor:text;
+}
+
+
+
+
