@@ -1,18 +1,17 @@
 #!/usr/bin/env python
 from distutils.core import setup
-import sparky_client
-
+import rosetta_inpage
 setup(
-    name='sparky_client',
-    version=sparky_client.__version__,
-    description='Translate Django messages inline with a cache and database backend',
+    name='rosetta_inpage',
+    version=rosetta_inpage.__version__,
+    description='Translate Django i18n messages with Rosetta inpage',
     author='VikingCo NV',
     author_email='maarten.huijsmans@mobilevikings.com',
-    url='http://github.com/citylive/sparky-client/',
-    packages=['sparky_client'],
+    url='http://github.com/citylive/django-rosetta-inpage/',
+    packages=['rosetta_inpage'],
     license='BSD',
     include_package_data = True,
-    package_data = {'spark_client': ['templates/sparky_client/*'],},
+    package_data = {'rosetta_inpage': ['templates/rosetta_inpage/*'],},
     zip_safe = False,
     classifiers = [
         'Development Status :: 1 - Alpha',
