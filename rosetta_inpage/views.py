@@ -52,7 +52,8 @@ class MessageView(View):
         from rosetta.poutil import find_pos
         from rosetta.polib import pofile
 
-        # file_ = find_pos(langid, project_apps=project_apps, django_apps=django_apps, third_party_apps=third_party_apps)[int(idx)]
+        # file_ = find_pos(langid, project_apps=project_apps, django_apps=django_apps,
+        # third_party_apps=third_party_apps)[int(idx)]
         stor = storage.get_storage(request)
         pos = find_pos('nl-nl', third_party_apps=True)
         print "Post 2 = ", repr(stor), ", ", repr(pos)

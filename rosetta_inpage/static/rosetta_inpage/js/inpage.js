@@ -117,6 +117,7 @@ $("a").click(function(e)
 
 
 $(document).ready(function(){
+    /*
     $.post('/rosetta_inpage/ajax/message', {
         'source': 'Login',
         'lang': 'nl',
@@ -124,4 +125,5 @@ $(document).ready(function(){
     }).done(function(data){
         //alert(JSON.stringify(data));
     });
+    */
 });

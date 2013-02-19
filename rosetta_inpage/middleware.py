@@ -5,16 +5,16 @@ from django.template import RequestContext
 from django.utils.html import mark_safe
 
 from rosetta_inpage import hash
-from rosetta_inpage.models import (THREAD_LOCAL_STORAGE, EDIT_MODE, MESSAGES)
+from rosetta_inpage.conf import EDIT_MODE, MESSAGES
+from rosetta_inpage.patches import THREAD_LOCAL_STORAGE
+from rosetta_inpage.utils import encode, escape, get_language_catalog
 
 
 class TranslateMiddleware(object):
     """
-
+    Adds an extra html toolbar (and css & js) to translate strings if the user is a staff user.
+    After the response content is rendered this middleware will insert the html
     """
-    def __init__(self):
-        pass
-
     def is_edit_mode(self, request):
         #return request.GET.get('translate', 'False').lower() == 'true' and request.user.is_staff
         return request.user.is_staff
@@ -54,43 +54,76 @@ class TranslateMiddleware(object):
 
         messages = getattr(THREAD_LOCAL_STORAGE, MESSAGES, set())
         dictionary = {
-            'messages': messages_iterator(messages),
-            'count': len(messages),
-            'rosetta_inpage_translate_from': str(settings.SOURCE_LANGUAGE_CODE.split('-')[0]),
-            'rosetta_inpage_translate_to': str(request.LANGUAGE_CODE),
+            'rosetta_inpage': {
+                'messages': messages_iterator(messages),
+                'count': len(messages),
+                'translate_from': str(settings.SOURCE_LANGUAGE_CODE.split('-')[0]),
+                'translate_to': str(request.LANGUAGE_CODE),
+            }
         }
 
         html = render_to_string("rosetta_inpage/sidebar.html", dictionary, context_instance=RequestContext(request))
-
         response.content = content[:index] + html.encode("utf-8") + content[index:]
         #response.content =  unicode(s)
         return response
 
 
 def messages_iterator(list_messages):
-    for msg in list_messages:
-        # Use the original translate function instead of the patched one
-        from rosetta_inpage.patches import original as _
-        yield {
+    """
+    Use the original translate function instead of the patched one
+    """
+    from django.utils.translation.trans_real import get_language
+    from rosetta.polib import pofile
+    from rosetta.poutil import find_pos
+    from rosetta_inpage.patches import original as _  # The original
+    lang = get_language()
+    catalog = get_language_catalog(lang)
+    files = find_pos(lang, third_party_apps=True)
+    print "Language ", repr(lang), repr(files), ", "
+
+    def create(msg):
+        translated = catalog.dict.get(msg, None)
+        shebam = catalog.dict.get('"You don’t need to grow a beard to become a Viking."', None)
+
+        #if translated:
+        #    print "Test= ", shebam, msg, translated, "==", encode(translated.msgstr), ", file=", str(translated.pfile), "obs=", str(translated.obsolete), "\n"
+
+        return {
             'show': encode(msg),
             'hash': hash(msg),
             'source': mark_safe(msg),  # the source message
             'msg': mark_safe(_(msg)),  # the translated message
-            'translated': True if msg != _(msg) else False,
+            'translated': True if translated is not None and not translated.obsolete else False,
         }
 
+    for msg in list_messages:
+        yield create(msg)
 
-def encode(message):
-    try:
-        return message.decode().encode('utf-8')
-    except UnicodeEncodeError:
-        return message.encode('utf-8')
+"""
+    def post(self, request):
+        source = request.POST.get('source', '')
+        target_locale = request.POST.get('lang', '')
+        target_msg = request.POST.get('msg', '')
+        print "Post 1 = ", str(source), ", ", str(target_locale), ", ", str(target_msg)
+        print "Post 1.1 = ", str(settings.SOURCE_LANGUAGE_CODE), ", ", str(request.LANGUAGE_CODE)
+
+        from rosetta import storage
+        from rosetta.poutil import find_pos
+        from rosetta.polib import pofile
+
+        # file_ = find_pos(langid, project_apps=project_apps, django_apps=django_apps, third_party_apps=third_party_apps)[int(idx)]
+        stor = storage.get_storage(request)
+        pos = find_pos('nl-nl', third_party_apps=True)
+        print "Post 2 = ", repr(stor), ", ", repr(pos)
+
+        for p in pos:
+            file = pofile(p)
+            msg = file.find(source)
+            print "Msg = ", repr(msg), ", ", str(p)
+
+        return {
+            'status': 'ok',
+        }
+"""
 
 
-def escape(message):
-    #return message.replace('<', '&lt;').replace('>', '&gt;')
-    return message.replace('&', '&amp;')\
-        .replace('<', '&lt;')\
-        .replace('>', '&gt;')\
-        .replace('"', '&quot;')\
-        .replace("'", '&#39;')
