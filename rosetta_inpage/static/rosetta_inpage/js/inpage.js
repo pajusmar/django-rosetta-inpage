@@ -2,14 +2,14 @@
  * Functions for the translations
  *
  **/
-var Sparky = {
+var RosettaInpage = {
     'root': '/rosetta_inpage'
 };
 
 /**
  *
  */
-Sparky.init = function(){
+RosettaInpage.init = function(){
 
 };
 
@@ -17,9 +17,9 @@ Sparky.init = function(){
  *
  * @param [e]
  */
-Sparky.hideForm = function(e){
-    //$("#sprak-form").hide();
-    //$("#sprak-sidebar a").removeClass("active");
+RosettaInpage.hideForm = function(e){
+    //$("#rosetta-inpage-form").hide();
+    //$("#rosetta-inpage-sidebar a").removeClass("active");
 };
 
 /**
@@ -29,7 +29,7 @@ Sparky.hideForm = function(e){
  *
  * @param obj
  */
-Sparky.moveCursorToEnd = function(obj){
+RosettaInpage.moveCursorToEnd = function(obj){
     var value = obj.val(); //store the value of the element
     $(obj).focus().val(value);
 };
@@ -46,10 +46,10 @@ Sparky.moveCursorToEnd = function(obj){
 
 
 
-$("#sprak-sidebar a").click(function(e){
+$("#rosetta-inpage-sidebar a").click(function(e){
     var pos = $(this).position();
     var width = $(this).outerWidth();
-    var form = $("#sparky-form");
+    var form = $("#rosetta-inpage-form");
 
     var input = form.find('input[name="source"]');
     var textarea = form.find('textarea');
@@ -66,10 +66,10 @@ $("#sprak-sidebar a").click(function(e){
     input.val(source.html());
     textarea.focus();
     textarea.val(msg.html());
-    Sparky.moveCursorToEnd(textarea);
+    RosettaInpage.moveCursorToEnd(textarea);
 
 
-    $("#sprak-sidebar a").removeClass("active");
+    $("#rosetta-inpage-sidebar a").removeClass("active");
     $(this).addClass("active");
     e.stopPropagation();
 
@@ -81,16 +81,16 @@ $("#sprak-sidebar a").click(function(e){
      */
 });
 
-$("#sprak-sidebar").scroll(Sparky.hideForm);
+$("#rosetta-inpage-sidebar").scroll(RosettaInpage.hideForm);
 
-$("#sparky-form").click(function(e){
+$("#rosetta-inpage-form").click(function(e){
     e.stopPropagation();
 });
 
 $(document).click(function(e){
-    //console.log($(e.target).is(".sprak-form"));
-    Sprak.hideForm();
-    //$("#sprak-form").hide();
+    //console.log($(e.target).is(".rosetta-inpage-form"));
+    RosettaInpage.hideForm();
+    //$("#rosetta-inpage-form").hide();
 });
 
 

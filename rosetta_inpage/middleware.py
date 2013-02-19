@@ -55,8 +55,8 @@ class TranslateMiddleware(object):
         vars = {
             'messages': messages_iterator(messages),
             'count': len(messages),
-            'sparky_translate_from': str(settings.SOURCE_LANGUAGE_CODE.split('-')[0]),
-            'sparky_translate_to': str(request.LANGUAGE_CODE),
+            'rosetta_inpage_translate_from': str(settings.SOURCE_LANGUAGE_CODE.split('-')[0]),
+            'rosetta_inpage_translate_to': str(request.LANGUAGE_CODE),
         }
 
         html = render_to_string("rosetta_inpage/sidebar.html", vars, context_instance=RequestContext(request))

@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 from distutils.core import setup
 import rosetta_inpage
+
 setup(
     name='rosetta_inpage',
     version=rosetta_inpage.__version__,
@@ -22,5 +23,5 @@ setup(
         'Environment :: Web Environment',
         'Framework :: Django',
         'Topic :: Software Development :: Internationalization',
-        ],
+        ], requires=['django'],
 )

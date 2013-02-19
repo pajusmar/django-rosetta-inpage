@@ -1,6 +1,6 @@
 {% load i18n %}
-<div class="sprak-sidebar" id="sprak-sidebar">{{banaan}}
-    <h1>Translate: {{sparky_translate_from|upper}} &raquo; {{sparky_translate_to|upper}}</h1>
+<div class="rosetta-inpage-sidebar" id="rosetta-inpage-sidebar">{{banaan}}
+    <h1>Translate: {{rosetta_inpage_translate_from|upper}} &raquo; {{rosetta_inpage_translate_to|upper}}</h1>
     <p>Progress: 20 / {{ count }} (53%)</p>
     <ul>
         {% for msg in messages %}
@@ -12,17 +12,17 @@
     </ul>
     <p>Woeha, finished!</p>
 </div>
-<div class="sparky-form" id="sparky-form">
-    <form action="{% url sparky-message %}" method="POST">
+<div class="rosetta-inpage-form" id="rosetta-inpage-form">
+    <form action="{% url rosetta-inpage-message %}" method="POST">
         {% csrf_token %}
         <input type="hidden" name="source" value=""/>
-        <input type="hidden" name="lang" value="{{ sparky_translate_to }}"/>
+        <input type="hidden" name="lang" value="{{ rosetta_inpage_translate_to }}"/>
         <textarea cols="60" rows="6" name="msg"></textarea><br/>
         <input type="submit" name="submit" value="Save"/>
     </form>
 </div>
 
 <!-- Hello source code browser-->
-<script src="{{ STATIC_URL }}sparky/js/sparky.js"></script>
-<link href="{{ STATIC_URL }}sparky/css/sparky.css" rel="stylesheet"/>
+<script src="{{ STATIC_URL }}rosetta_inpage/js/inpage.js"></script>
+<link href="{{ STATIC_URL }}rosetta_inpage/css/inpage.css" rel="stylesheet"/>
 
