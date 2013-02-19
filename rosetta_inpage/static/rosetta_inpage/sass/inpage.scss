@@ -11,6 +11,17 @@ $font-family: Helvetica,arial,sans-serif;
 $sidebar-width: 350;
 $z-index: 100000000;
 
+/* Mixins
+=====================================*/
+@mixin clearfix_after {
+  content: ".";
+  display: block;
+  clear: both;
+  visibility: hidden;
+  line-height: 0;
+  height: 0;
+}
+
 /* Some beautiful CSS
 =====================================*/
 /*
@@ -40,7 +51,7 @@ $z-index: 100000000;
   overflow-y: scroll;
   overflow-x: hidden;
   padding-top: 45px;
-  padding-bottom: 200px;
+  padding-bottom: 150px;
   font-family: $font-family;
 
   h1{
@@ -127,6 +138,19 @@ $z-index: 100000000;
   }
 }
 
+.rosetta-inpage-footer{
+  padding: 20px 10px 0 10px;
+  display: block;
+
+  img, p {
+    float:left;
+  }
+}
+
+.rosetta-inpage-footer:after{
+  @include clearfix_after;
+}
+
 .rosetta-inpage-form{
   position:fixed;
   width:500px;
@@ -157,7 +181,4 @@ span[contenteditable='false']:hover{
   background:rgba(255,255,255,0.8);
   cursor:text;
 }
-
-
-
 

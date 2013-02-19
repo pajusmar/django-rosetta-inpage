@@ -7,6 +7,7 @@ from django.utils.html import mark_safe
 from rosetta_inpage import hash
 from rosetta_inpage.models import (THREAD_LOCAL_STORAGE, EDIT_MODE, MESSAGES)
 
+
 class TranslateMiddleware(object):
     """
 
@@ -52,29 +53,30 @@ class TranslateMiddleware(object):
             return response
 
         messages = getattr(THREAD_LOCAL_STORAGE, MESSAGES, set())
-        vars = {
+        dictionary = {
             'messages': messages_iterator(messages),
             'count': len(messages),
             'rosetta_inpage_translate_from': str(settings.SOURCE_LANGUAGE_CODE.split('-')[0]),
             'rosetta_inpage_translate_to': str(request.LANGUAGE_CODE),
         }
 
-        html = render_to_string("rosetta_inpage/sidebar.html", vars, context_instance=RequestContext(request))
+        html = render_to_string("rosetta_inpage/sidebar.html", dictionary, context_instance=RequestContext(request))
 
         response.content = content[:index] + html.encode("utf-8") + content[index:]
         #response.content =  unicode(s)
         return response
 
 
-def messages_iterator(list):
-    for msg in list:
+def messages_iterator(list_messages):
+    for msg in list_messages:
         # Use the original translate function instead of the patched one
         from rosetta_inpage.patches import original as _
         yield {
             'show': encode(msg),
             'hash': hash(msg),
-            'source': mark_safe(msg), # the source message
-            'msg': mark_safe(_(msg)), # the translated message
+            'source': mark_safe(msg),  # the source message
+            'msg': mark_safe(_(msg)),  # the translated message
+            'translated': True if msg != _(msg) else False,
         }
 
 
@@ -87,6 +89,8 @@ def encode(message):
 
 def escape(message):
     #return message.replace('<', '&lt;').replace('>', '&gt;')
-    return message.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;').replace('"', '&quot;').replace("'", '&#39;')
-
-
+    return message.replace('&', '&amp;')\
+        .replace('<', '&lt;')\
+        .replace('>', '&gt;')\
+        .replace('"', '&quot;')\
+        .replace("'", '&#39;')
