@@ -33,11 +33,12 @@
     </form>
 </div>
 
-<!-- Jquery & ajax forms-->
-<!--<script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.1/jquery.min.js"></script>-->
-<script src="//cdnjs.cloudflare.com/ajax/libs/jquery.form/3.24/jquery.form.js"></script>
-<!-- Rosetta Inpage JavaScript & Styling-->
-<script src="{{ STATIC_URL }}rosetta_inpage/js/inpage.js"></script>
+<!--Custom Styling-->
 <link href="{{ STATIC_URL }}rosetta_inpage/css/inpage.css" rel="stylesheet"/>
-<!-- Hello source code browser-->
+<!--Load jQuery and jQuery Ajax Form -->
+<script>!window.jQuery && document.write('<script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.1/jquery.min.js"><' + '/script>');</script>
+<script>!window.jQuery().ajaxForm && document.write('<script src="//cdnjs.cloudflare.com/ajax/libs/jquery.form/3.24/jquery.form.js"><' + '/script>');</script>
+<!--Rosetta Inpage JavaScript and initialize after the file is loaded -->
+<script src="{{ STATIC_URL }}rosetta_inpage/js/inpage.js"></script>
+<script>RosettaInpage.init();</script>
 
