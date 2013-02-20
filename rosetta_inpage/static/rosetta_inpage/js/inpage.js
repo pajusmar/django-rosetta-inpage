@@ -34,6 +34,18 @@ RosettaInpage.moveCursorToEnd = function(obj){
     $(obj).focus().val(value);
 };
 
+/**
+ *
+ * @returns {boolean}
+ */
+RosettaInpage.submit = function(){
+    return false;
+};
+
+
+
+
+
 
 
 
@@ -55,7 +67,11 @@ $("#rosetta-inpage-sidebar a").click(function(e){
     var textarea = form.find('textarea');
 
     var source = $(this).parent().find('code[type="source"]');
-    var msg = $(this).parent().find('code[type="msg"]');
+    var msg = $(this).parent().find('code[type="msg"]').html();
+    var translated = msg.substring(4, msg.length-3);
+
+    var next = $(this).parent().next();
+    form.find('input[name="next"]').val(next.children(':first').attr('id'));
 
     form.show();
     form.css({
@@ -65,7 +81,7 @@ $("#rosetta-inpage-sidebar a").click(function(e){
 
     input.val(source.html());
     textarea.focus();
-    textarea.val(msg.html());
+    textarea.val(translated);
     RosettaInpage.moveCursorToEnd(textarea);
 
 
@@ -111,7 +127,7 @@ $("a").click(function(e)
 {
     var id = $(this).attr('id');
 
-    console.log("DDD = " + id);
+    //console.log("DDD = " + id);
     //e.preventDefault();
 });
 
@@ -126,4 +142,27 @@ $(document).ready(function(){
         //alert(JSON.stringify(data));
     });
     */
+
+
+    var form = $("#rosetta-inpage-form");
+    //form.find('textarea').attr('disabled', 'disabled');
+
+    form.find("form").ajaxForm({
+        beforeSubmit: function(data, jqForm, options){
+            console.log("1=" + data);
+            console.log("2=" + jqForm);
+            console.log("3=" + options);
+            $(jqForm).find('textarea').attr('disabled', 'disabled');
+            $(jqForm).find('input[type=submit]').attr('value', 'Saving ...');
+        },
+        success: function(responseText, statusText, xhr, jqForm){
+            console.log(JSON.stringify(responseText) + ", " + statusText);
+            $(jqForm).find('textarea').removeAttr('disabled');
+            $(jqForm).find('input[type="submit"]').attr('value', 'Save');
+
+            var nextId = $(jqForm).find('input[name="next"]').val();
+            $('#' + nextId).trigger('click');
+        }
+    });
+
 });

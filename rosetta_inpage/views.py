@@ -45,8 +45,8 @@ class MessageView(View):
         source = request.POST.get('source', '')
         target_locale = request.POST.get('lang', '')
         target_msg = request.POST.get('msg', '')
-        print "Post 1 = ", str(source), ", ", str(target_locale), ", ", str(target_msg)
-        print "Post 1.1 = ", str(settings.SOURCE_LANGUAGE_CODE), ", ", str(request.LANGUAGE_CODE)
+        #print "Post 1 = ", str(source), ", ", str(target_locale), ", ", str(target_msg)
+        #print "Post 1.1 = ", str(settings.SOURCE_LANGUAGE_CODE), ", ", str(request.LANGUAGE_CODE)
 
         from rosetta import storage
         from rosetta.poutil import find_pos

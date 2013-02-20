@@ -3,10 +3,15 @@
     <h1>Translate: {{rosetta_inpage.translate_from|upper}} &raquo; {{rosetta_inpage.translate_to|upper}}</h1>
     <p>Progress: 20 / {{ rosetta_inpage.count }} (53%)</p>
     <ul>
+        <!--
+        The translated strings the <code type="msg"> tags are placed between comment directives.
+        Some strings contain html tags and they may not be executed, for example: <img src="%(static_url)/test.png"/>,
+        this will do a server request for the image.
+        -->
         {% for msg in rosetta_inpage.messages %}
         <li {% if not msg.translated %}class="rosetta-inpage-todo"{% endif %}><a href="javascript:void(0)" id="s-{{ msg.hash }}">{{ msg.show }}</a>
             <code type="source" data-inpage="{'translated':'{{ msg.translated|lower }}'}">{{ msg.source }}</code>
-            <code type="msg">{{ msg.msg }}</code>
+            <code type="msg"><!--{{ msg.msg }}--></code>
         </li>
         {% endfor %}
     </ul>
@@ -18,16 +23,21 @@
 </div>
 
 <div class="rosetta-inpage-form" id="rosetta-inpage-form">
-    <form action="{% url rosetta-inpage-message %}" method="POST">
+    <form action="{% url rosetta-inpage-message %}" method="post">
         {% csrf_token %}
         <input type="hidden" name="source" value=""/>
         <input type="hidden" name="lang" value="{{ rosetta_inpage_translate_to }}"/>
         <textarea cols="60" rows="6" name="msg"></textarea><br/>
+        <input type="hidden" name="next" value=""/>
         <input type="submit" name="submit" value="Save"/>
     </form>
 </div>
 
-<!-- Hello source code browser-->
+<!-- Jquery & ajax forms-->
+<!--<script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.1/jquery.min.js"></script>-->
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery.form/3.24/jquery.form.js"></script>
+<!-- Rosetta Inpage JavaScript & Styling-->
 <script src="{{ STATIC_URL }}rosetta_inpage/js/inpage.js"></script>
 <link href="{{ STATIC_URL }}rosetta_inpage/css/inpage.css" rel="stylesheet"/>
+<!-- Hello source code browser-->
 

@@ -73,31 +73,33 @@ def messages_iterator(list_messages):
     Use the original translate function instead of the patched one
     """
     from django.utils.translation.trans_real import get_language
-    from rosetta.polib import pofile
-    from rosetta.poutil import find_pos
     from rosetta_inpage.patches import original as _  # The original
+
+    results = []
     lang = get_language()
     catalog = get_language_catalog(lang)
-    files = find_pos(lang, third_party_apps=True)
-    print "Language ", repr(lang), repr(files), ", "
 
     def create(msg):
         translated = catalog.dict.get(msg, None)
-        shebam = catalog.dict.get('"You don’t need to grow a beard to become a Viking."', None)
+        is_valid_translation = True if translated and translated.msgstr is not u"" or None and not translated.obsolete else False
+        ttt = True if translated else False
 
-        #if translated:
-        #    print "Test= ", shebam, msg, translated, "==", encode(translated.msgstr), ", file=", str(translated.pfile), "obs=", str(translated.obsolete), "\n"
+        if translated:
+            print "\n\n", str(is_valid_translation), ", ", str(ttt), "="
+            print "Test= ", msg, translated, "==", encode(translated.msgstr), ", file=", str(translated.pfile), "obs=", str(translated.obsolete), "\n"
 
         return {
             'show': encode(msg),
             'hash': hash(msg),
             'source': mark_safe(msg),  # the source message
             'msg': mark_safe(_(msg)),  # the translated message
-            'translated': True if translated is not None and not translated.obsolete else False,
+            'translated': is_valid_translation,
         }
 
     for msg in list_messages:
-        yield create(msg)
+        results.append(create(msg))
+
+    return results
 
 """
     def post(self, request):
