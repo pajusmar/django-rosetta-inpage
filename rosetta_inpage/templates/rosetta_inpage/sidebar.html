@@ -1,21 +1,31 @@
 {% load i18n %}
+<!--ROSETTA_INPAGE_BEGIN-->
 <div class="rosetta-inpage-sidebar" id="rosetta-inpage-sidebar">
-    <h1>Translate: {{rosetta_inpage.translate_from|upper}} &raquo; {{rosetta_inpage.translate_to|upper}}</h1>
-    <p>Progress: 20 / {{ rosetta_inpage.count }} (53%)</p>
-    <ul>
-        <!--
-        The translated strings the <code type="msg"> tags are placed between comment directives.
-        Some strings contain html tags and they may not be executed, for example: <img src="%(static_url)/test.png"/>,
-        this will do a server request for the image.
-        -->
-        {% for msg in rosetta_inpage.messages %}
-        <li {% if not msg.translated %}class="rosetta-inpage-todo"{% endif %}><a href="javascript:void(0)" id="s-{{ msg.hash }}">{{ msg.show }}</a>
-            <code type="source" data-inpage="{'translated':'{{ msg.translated|lower }}'}">{{ msg.source }}</code>
-            <code type="msg"><!--{{ msg.msg }}--></code>
-        </li>
-        {% endfor %}
-    </ul>
+    <div class="rosetta-inpage-header">
+        <h1>Translate: {{rosetta_inpage.translate_from|upper}} &raquo; {{rosetta_inpage.translate_to|upper}}</h1>
+        <p>{{ rosetta_inpage.stats.translated }} / {{ rosetta_inpage.stats.count }} (<strong>{{ rosetta_inpage.stats.percentage|floatformat:0 }}%</strong>)</p>
 
+        <ul style="display: block">
+            <li><a href="javascript:void(0)" onclick="RosettaInpage.github();" title="Commit to GitHub"><img src="{{ STATIC_URL }}rosetta_inpage/img/glyphicons/glyphicons_401_github.png" width="24" height="24"/></a></li>
+            <li><a href="javascript:void(0)" onclick="RosettaInpage.reload();" title="Reload page"><img src="{{ STATIC_URL }}rosetta_inpage/img/glyphicons/glyphicons_081_refresh.png" width="24" height="24"/></a></li>
+            <li><a href="/rosetta_inpage/pick" target="_blank" title="Go to translation admin"><img src="{{ STATIC_URL }}rosetta_inpage/img/glyphicons/glyphicons_355_bullhorn.png" width="24" height="24"/></a></li>
+        </ul>
+    </div>
+    <div class="rosetta-inpage-content">
+        <ul>
+            <!--
+            The translated strings the <code type="msg"> tags are placed between comment directives.
+            Some strings contain html tags and they may not be executed, for example: <img src="%(static_url)/test.png"/>,
+            this will do a server request for the image.
+            -->
+            {% for msg in rosetta_inpage.messages %}
+            <li {% if not msg.translated %}class="rosetta-inpage-todo"{% endif %}><a href="javascript:void(0)" id="s-{{ msg.hash }}">{{ msg.show }}</a>
+                <code type="source" data-inpage="{'translated':'{{ msg.translated|lower }}'}">{{ msg.source }}</code>
+                <code type="msg"><!--{{ msg.msg }}--></code>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
     <div class="rosetta-inpage-footer">
         <img src="{{ STATIC_URL }}rosetta_inpage/img/squirrel.png" width="75"/>
         <p>Skadoosh! It's done ...</p>
@@ -33,6 +43,10 @@
     </form>
 </div>
 
+<div class="rosetta-inpage-loading" id="rosetta-inpage-loading">
+    <img src="{{ STATIC_URL }}rosetta_inpage/img/pacman.gif" alt="Loading ..."/>
+</div>
+
 <!--Custom Styling-->
 <link href="{{ STATIC_URL }}rosetta_inpage/css/inpage.css" rel="stylesheet"/>
 <!--Load jQuery and jQuery Ajax Form -->
@@ -41,4 +55,4 @@
 <!--Rosetta Inpage JavaScript and initialize after the file is loaded -->
 <script src="{{ STATIC_URL }}rosetta_inpage/js/inpage.js"></script>
 <script>RosettaInpage.init();</script>
-
+<!--ROSETTA_INPAGE_END-->

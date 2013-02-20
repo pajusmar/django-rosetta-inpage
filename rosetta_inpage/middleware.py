@@ -53,12 +53,18 @@ class TranslateMiddleware(object):
             return response
 
         messages = getattr(THREAD_LOCAL_STORAGE, MESSAGES, set())
+        viewer = messages_viewer(messages)
+        percentage = 100 * float(viewer[1])/float(len(messages))
         dictionary = {
             'rosetta_inpage': {
-                'messages': messages_iterator(messages),
-                'count': len(messages),
+                'messages': viewer[0],
                 'translate_from': str(settings.SOURCE_LANGUAGE_CODE.split('-')[0]),
                 'translate_to': str(request.LANGUAGE_CODE),
+                'stats': {
+                    'count': len(messages),
+                    'translated': viewer[1],
+                    'percentage': percentage,
+                }
             }
         }
 
@@ -68,7 +74,7 @@ class TranslateMiddleware(object):
         return response
 
 
-def messages_iterator(list_messages):
+def messages_viewer(list_messages):
     """
     Use the original translate function instead of the patched one
     """
@@ -78,15 +84,15 @@ def messages_iterator(list_messages):
     results = []
     lang = get_language()
     catalog = get_language_catalog(lang)
+    translated_count = 0
 
     def create(msg):
         translated = catalog.dict.get(msg, None)
         is_valid_translation = True if translated and translated.msgstr is not u"" or None and not translated.obsolete else False
-        ttt = True if translated else False
 
-        if translated:
-            print "\n\n", str(is_valid_translation), ", ", str(ttt), "="
-            print "Test= ", msg, translated, "==", encode(translated.msgstr), ", file=", str(translated.pfile), "obs=", str(translated.obsolete), "\n"
+        #if translated:
+        #    print "\n\n", str(is_valid_translation), ", "
+        #    print "Test= ", msg, translated, "==", encode(translated.msgstr), ", file=", str(translated.pfile), "obs=", str(translated.obsolete), "\n"
 
         return {
             'show': encode(msg),
@@ -97,9 +103,12 @@ def messages_iterator(list_messages):
         }
 
     for msg in list_messages:
-        results.append(create(msg))
+        item = create(msg)
+        results.append(item)
+        if item.get('translated', False):
+            translated_count += 1
 
-    return results
+    return (results, translated_count)
 
 """
     def post(self, request):

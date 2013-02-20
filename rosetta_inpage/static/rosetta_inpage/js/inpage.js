@@ -34,7 +34,7 @@
      * Initialize all links in the sidebar.  When the user clicks on it the form to translate will appear
      */
     function initLinks(){
-        $('#' + ID_SIDEBAR + ' a').click(function(e){
+        $('#' + ID_SIDEBAR + ' .' + PREFIX + '-content  a').click(function(e){
             var pos = $(this).position();
             var width = $(this).outerWidth();
             var form = $('#' + ID_FORM);
@@ -90,6 +90,7 @@
                 console.log("3=" + options);
                 $(jqForm).find('textarea').attr('disabled', 'disabled');
                 $(jqForm).find('input[type=submit]').attr('value', 'Saving ...');
+                showLoading();
             },
             success: function(responseText, statusText, xhr, jqForm){
                 console.log(JSON.stringify(responseText) + ", " + statusText);
@@ -98,6 +99,7 @@
 
                 var nextId = $(jqForm).find('input[name="next"]').val();
                 $('#' + nextId).trigger('click');
+                hideLoading();
             }
         });
     }
@@ -143,6 +145,18 @@
         $(obj).focus().val(value);
     }
 
+    function showLoading(){
+        //$('#' + PREFIX + '-loading').fadeIn('slow');
+        //$('#' + PREFIX + '-loading').fadeIn();
+        $('#' + PREFIX + '-loading').show();
+    }
+
+    function hideLoading(){
+        //$('#' + PREFIX + '-loading').fadeOut('slow');
+        //$('#' + PREFIX + '-loading').fadeOut();
+        $('#' + PREFIX + '-loading').hide();
+    }
+
 
 
 
@@ -156,6 +170,30 @@
         initPage();
     };
 
+    Inpage.reload = function(){
+        showLoading();
+        window.location.reload();
+
+//        var url = window.location;
+//
+//        $.get(url, function(data) {
+//            data = data.replace(/<(\/)?body([^>]*)>/g, '<body>');
+//            var indexBegin = data.indexOf('<body>');
+//            var indexEnd = data.indexOf('<!--ROSETTA_INPAGE_BEGIN-->');
+//            alert(indexBegin + ", " + indexEnd);
+//            var s = data.substring(indexBegin+6, indexEnd);
+//            console.log(s);
+//            $('body').html(s);
+//        });
+
+        return false;
+    };
+
+    Inpage.github = function(){
+        showLoading();
+        setTimeout(hideLoading, 2000);
+    };
+
     /**
      * Exposing functionality
      * Remapping Inpage to RosettaInpage
@@ -164,6 +202,9 @@
         window.RosettaInpage = Inpage;
     }
 })(window, document);
+
+
+
 
 
 //Deprecated
