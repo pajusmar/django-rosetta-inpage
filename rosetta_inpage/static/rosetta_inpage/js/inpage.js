@@ -42,9 +42,11 @@
             var input = form.find('input[name="source"]');
             var textarea = form.find('textarea');
 
-            var source = $(this).parent().find('code[type="source"]');
+            var source = $(this).parent().find('code[type="source"]').html();
             var msg = $(this).parent().find('code[type="msg"]').html();
-            var translated = msg.substring(4, msg.length-3);
+
+            var source_stripped = source.substring(4, source.length-3);
+            var msg_stripped = msg.substring(4, msg.length-3);
 
             var next = $(this).parent().next();
             form.find('input[name="next"]').val(next.children(':first').attr('id'));
@@ -55,9 +57,9 @@
                 'left': pos['left'] + width
             });
 
-            input.val(source.html());
+            input.val(source_stripped);
             textarea.focus();
-            textarea.val(translated);
+            textarea.val(msg_stripped);
             moveCursorToEnd(textarea);
 
 
@@ -192,6 +194,9 @@
 
     Inpage.github = function(){
         showLoading();
+        $.post(ROOT + "/ajax/github", function(data){
+            console.log(JSON.stringify(data));
+        });
         setTimeout(hideLoading, 2000);
     };
 

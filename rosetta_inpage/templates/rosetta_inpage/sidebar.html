@@ -2,8 +2,9 @@
 <!--ROSETTA_INPAGE_BEGIN-->
 <div class="rosetta-inpage-sidebar" id="rosetta-inpage-sidebar">
     <div class="rosetta-inpage-header">
-        <h1>Translate: {{rosetta_inpage.translate_from|upper}} &raquo; {{rosetta_inpage.translate_to|upper}}</h1>
-        <p>{{ rosetta_inpage.stats.translated }} / {{ rosetta_inpage.stats.count }} (<strong>{{ rosetta_inpage.stats.percentage|floatformat:0 }}%</strong>)</p>
+        <!--<h1>Translate: {{rosetta_inpage.translate_from|upper}} &raquo; {{rosetta_inpage.translate_to|upper}}</h1>-->
+        <h1>Translate to: {{rosetta_inpage.translate_to|upper}}</h1>
+        <p {% ifequal rosetta_inpage.stats.translated rosetta_inpage.stats.count%}class="green"{% endifequal %}>{{ rosetta_inpage.stats.translated }} / {{ rosetta_inpage.stats.count }} (<strong>{{ rosetta_inpage.stats.percentage|floatformat:0 }}%</strong>)</p>
 
         <ul style="display: block">
             <li><a href="javascript:void(0)" onclick="RosettaInpage.github();" title="Commit to GitHub"><img src="{{ STATIC_URL }}rosetta_inpage/img/glyphicons/glyphicons_401_github.png" width="24" height="24"/></a></li>
@@ -20,7 +21,7 @@
             -->
             {% for msg in rosetta_inpage.messages %}
             <li {% if not msg.translated %}class="rosetta-inpage-todo"{% endif %}><a href="javascript:void(0)" id="s-{{ msg.hash }}">{{ msg.show }}</a>
-                <code type="source" data-inpage="{'translated':'{{ msg.translated|lower }}'}">{{ msg.source }}</code>
+                <code type="source" data-inpage="{'translated':'{{ msg.translated|lower }}'}"><!--{{ msg.source }}--></code>
                 <code type="msg"><!--{{ msg.msg }}--></code>
             </li>
             {% endfor %}
@@ -28,7 +29,7 @@
     </div>
     <div class="rosetta-inpage-footer">
         <!--<img src="{{ STATIC_URL }}rosetta_inpage/img/squirrel.png" width="75"/>-->
-        <p style="padding-top: 40px">It's done ...</p>
+        <p>It's done ...</p>
     </div>
 </div>
 

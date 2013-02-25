@@ -28,6 +28,7 @@ def json_rsponse(view):
 
 
 class MessageView(View):
+
     @json_rsponse
     def get(self, request):
         source = request.GET.get('source', '')
@@ -84,3 +85,22 @@ class MessageView(View):
         return {
             'status': 'ok',
         }
+
+
+class GitHubView(View):
+
+    @json_rsponse
+    def get(self, request):
+        return {
+            'status': 'ok',
+            'git': 'hub'
+        }
+
+    @csrf_exempt
+    @json_rsponse
+    def post(self, request):
+        return {
+            'status': 'ok',
+            'git': 'hub'
+        }
+

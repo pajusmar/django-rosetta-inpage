@@ -31,7 +31,7 @@ def _new_ugettext(message):
         #return original(message)
         translated = catalog.dict.get(message, None)
         if translated:
-            return translated.msgstr
+            return mark_safe(translated.msgstr)
         else:
             return original(message)
     else:
