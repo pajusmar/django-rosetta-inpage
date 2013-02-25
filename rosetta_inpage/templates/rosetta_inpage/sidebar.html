@@ -4,9 +4,9 @@
     <div class="rosetta-inpage-header">
         <!--<h1>Translate: {{rosetta_inpage.translate_from|upper}} &raquo; {{rosetta_inpage.translate_to|upper}}</h1>-->
         <h1>Translate to: {{rosetta_inpage.translate_to|upper}}</h1>
-        <p {% ifequal rosetta_inpage.stats.translated rosetta_inpage.stats.count%}class="green"{% endifequal %}>{{ rosetta_inpage.stats.translated }} / {{ rosetta_inpage.stats.count }} (<strong>{{ rosetta_inpage.stats.percentage|floatformat:0 }}%</strong>)</p>
+        <p {% ifequal rosetta_inpage.stats.translated rosetta_inpage.stats.count%}class="translated"{% endifequal %}>{{ rosetta_inpage.stats.translated }} / {{ rosetta_inpage.stats.count }} (<strong>{{ rosetta_inpage.stats.percentage|floatformat:0 }}%</strong>)</p>
 
-        <ul style="display: block">
+        <ul>
             <li><a href="javascript:void(0)" onclick="RosettaInpage.github();" title="Commit to GitHub"><img src="{{ STATIC_URL }}rosetta_inpage/img/glyphicons/glyphicons_401_github.png" width="24" height="24"/></a></li>
             <li><a href="javascript:void(0)" onclick="RosettaInpage.reload();" title="Reload page"><img src="{{ STATIC_URL }}rosetta_inpage/img/glyphicons/glyphicons_081_refresh.png" width="24" height="24"/></a></li>
             <li><a href="/rosetta_inpage/pick" target="_blank" title="Go to translation admin"><img src="{{ STATIC_URL }}rosetta_inpage/img/glyphicons/glyphicons_355_bullhorn.png" width="24" height="24"/></a></li>
