@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import copy
+import re
 from rosetta.polib import pofile
 from rosetta.poutil import find_pos
 from django.utils.translation import to_locale
@@ -56,25 +57,25 @@ def encode(message):
         return message.encode('utf-8')
 
 
+# Regex to find 'variable' definitions in a translatable string
+PATTERN = re.compile(r'%(?:\([^\s\)]*\))?[sdf]')
 
-"""
-    var PATTERN = /%(?:\([^\s\)]*\))?[sdf]/g;
 
-    function validateVariables(source, newbie){
-        if(!source || !newbie){
-            return false;
-        }
+def validate_variables(original, target):
+    """
+    Check if the translated string contains equal variable definitions.
 
-        var matches_source = source.match(PATTERN);
-        var matches_newbie = newbie.match(PATTERN);
+    @param original:
+    @param target:
+    @return:
+    """
+    #original = 'This website uses cookies. Why? Click <a href="/%(country_code)s/%(language)s/conditions/cookies/" title="Cookie policy">here</a> for more information.'
+    #target = 'Deze website gebruikt cookies. Waarom? Klik <a href="/%(country_code)s/%(language)s/conditions/cookies/" title="Cookie policy">hier</a> voor meer informatie.'
 
-        if(matches_source && matches_newbie && matches_source.length != matches_newbie.length){
-            return false;
-        } else if(matches_source || matches_newbie){
-            return false;
-        }
+    if original and target:
+        result1 = PATTERN.findall(original)
+        result2 = PATTERN.findall(target)
+        return len(result1) == len(result2)
+    elif not original or not target:
+        return False
 
-        return true;
-    }
-
-"""

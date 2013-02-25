@@ -6,6 +6,7 @@ from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import View
 from django.utils.translation import trans_real
+from rosetta_inpage.utils import validate_variables
 
 logger = logging.getLogger(__name__)
 
@@ -43,6 +44,7 @@ class MessageView(View):
     @csrf_exempt
     @json_rsponse
     def post(self, request):
+        results = {}
         source = request.POST.get('source', '')
         target_locale = request.POST.get('lang', '')
         target_msg = request.POST.get('msg', '')
@@ -74,17 +76,20 @@ class MessageView(View):
             msg = file.find(source)
 
             if msg:
-                msg.msgstr = target_msg
-                msg.obsolete = False
-                file.save()
+                #msg.msgstr = target_msg
+                #msg.obsolete = False
+                #file.save()
                 #po_filepath, ext = os.path.splitext(p)
                 #save_as_mo_filepath = po_filepath + '.mo'
                 #file.save_as_mofile(save_as_mo_filepath)
                 print "Msg = ", repr(msg), ", ", str(p)
 
-        return {
-            'status': 'ok',
-        }
+        if validate_variables(source, target_msg):
+            results['status'] = 'ok'
+        else:
+            results['status'] = 'nok'
+
+        return results
 
 
 class GitHubView(View):
