@@ -97,6 +97,7 @@
                 $(jqForm).find('textarea').removeAttr('disabled');
                 $(jqForm).find('input[type="submit"]').attr('value', 'Save');
 
+                $('#' + ID_SIDEBAR).find('.active').parent().removeClass('rosetta-inpage-todo');
                 var nextId = $(jqForm).find('input[name="next"]').val();
                 $('#' + nextId).trigger('click');
                 hideLoading();
