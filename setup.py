@@ -5,7 +5,7 @@ import rosetta_inpage
 setup(
     name='rosetta_inpage',
     version=rosetta_inpage.__version__,
-    description='Translate Django i18n messages with Rosetta inpage',
+    description='Translate i18n messages with Django Rosetta',
     author='VikingCo NV',
     author_email='maarten.huijsmans@mobilevikings.com',
     url='http://github.com/citylive/django-rosetta-inpage/',
@@ -23,5 +23,8 @@ setup(
         'Environment :: Web Environment',
         'Framework :: Django',
         'Topic :: Software Development :: Internationalization',
-        ], requires=['django'],
+        ],
+    requires=[
+        'django',
+    ],
 )

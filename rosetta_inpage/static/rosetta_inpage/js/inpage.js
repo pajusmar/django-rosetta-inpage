@@ -228,9 +228,10 @@
     Inpage.github = function(){
         showLoading();
         $.post(ROOT + "/ajax/github", function(data){
+            hideLoading();
             console.log(JSON.stringify(data));
+            alert(JSON.stringify(data));
         });
-        setTimeout(hideLoading, 2000);
     };
 
     /**
