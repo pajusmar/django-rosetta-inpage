@@ -94,11 +94,16 @@ def messages_viewer(list_messages):
         #    print "\n\n", str(is_valid_translation), ", "
         #    print "Test= ", msg, translated, "==", encode(translated.msgstr), ", file=", str(translated.pfile), "obs=", str(translated.obsolete), "\n"
 
+        if is_valid_translation:
+            msg_target = translated.msgstr
+        else:
+            msg_target = _(msg)
+
         return {
             'show': encode(msg),
             'hash': hash(msg),
-            'source': mark_safe(msg),  # the source message
-            'msg': mark_safe(_(msg)),  # the translated message
+            'source': mark_safe(msg),       # the source message
+            'msg': mark_safe(msg_target),   # the translated message
             'translated': is_valid_translation,
         }
 
@@ -108,7 +113,8 @@ def messages_viewer(list_messages):
         if item.get('translated', False):
             translated_count += 1
 
-    return (results, translated_count)
+    return results, translated_count
+
 
 """
     def post(self, request):
