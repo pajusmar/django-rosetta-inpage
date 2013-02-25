@@ -82,22 +82,36 @@
      * Depends on http://cdnjs.cloudflare.com/ajax/libs/jquery.form/3.24/jquery.form.js
      */
     function initForm(){
-        var form = $('#' + ID_FORM);
-        //form.find('textarea').attr('disabled', 'disabled');
+        var $form = $('#' + ID_FORM);
+        var $alert = $form.find('.rosetta-inpage-alert');
 
-        form.find("form").ajaxForm({
+        $form.find('textarea[name="msg"]').focus(function(){
+            $alert.fadeOut('slow');
+        });
+
+        $form.find("form").ajaxForm({
             beforeSubmit: function(data, jqForm, options){
-                console.log("1=" + data);
-                console.log("2=" + jqForm);
-                console.log("3=" + options);
-                $(jqForm).find('textarea').attr('disabled', 'disabled');
-                $(jqForm).find('input[type=submit]').attr('value', 'Saving ...');
-                showLoading();
+                var source = $(jqForm).find('input[name="source"]').val();
+                var msg = $(jqForm).find('textarea[name="msg"]').val();
+                var is_valid = validateVariables(source, msg);
+
+                if(!is_valid){
+                    $alert.show();
+                    return false;
+                } else {
+                    $form.find('textarea').attr('disabled', 'disabled');
+                    $form.find('input[type=submit]')
+                        .attr('value', 'Saving ...')
+                        .attr('disabled', 'disabled');
+                    showLoading();
+                    return true;
+                }
             },
+
             success: function(responseText, statusText, xhr, jqForm){
-                console.log(JSON.stringify(responseText) + ", " + statusText);
-                $(jqForm).find('textarea').removeAttr('disabled');
-                $(jqForm).find('input[type="submit"]').attr('value', 'Save');
+                //console.log(JSON.stringify(responseText) + ", " + statusText);
+                $form.find('textarea').removeAttr('disabled');
+                $form.find('input[type="submit"]').attr('value', 'Save').removeAttr('disabled');
 
                 $('#' + ID_SIDEBAR).find('.active').parent().removeClass('rosetta-inpage-todo');
                 var nextId = $(jqForm).find('input[name="next"]').val();
@@ -112,17 +126,12 @@
      * Configure general events and controls
      */
     function initPage(){
-        $('#' + ID_SIDEBAR).scroll(hideForm);
-
         $('#' + ID_FORM).click(function(e){
             e.stopPropagation();
         });
 
-        $(document).click(function(e){
-            //console.log($(e.target).is(".rosetta-inpage-form"));
-            hideForm();
-            //$('#' + ID_FORM).hide();
-        });
+        $('#' + ID_SIDEBAR).scroll(hideForm);
+        $(document).click(hideForm);
     }
 
 
@@ -148,17 +157,41 @@
         $(obj).focus().val(value);
     }
 
+
     function showLoading(){
         //$('#' + PREFIX + '-loading').fadeIn('slow');
         //$('#' + PREFIX + '-loading').fadeIn();
         $('#' + PREFIX + '-loading').show();
     }
 
+
     function hideLoading(){
         //$('#' + PREFIX + '-loading').fadeOut('slow');
         //$('#' + PREFIX + '-loading').fadeOut();
         $('#' + PREFIX + '-loading').hide();
     }
+
+
+    var PATTERN = /%(?:\([^\s\)]*\))?[sdf]/g;
+
+    function validateVariables(source, newbie){
+        if(!source || !newbie){
+            return false;
+        }
+
+        var matches_source = source.match(PATTERN);
+        var matches_newbie = newbie.match(PATTERN);
+
+        if(matches_source && matches_newbie && matches_source.length != matches_newbie.length){
+            return false;
+        } else if(matches_source || matches_newbie){
+            return false;
+        }
+
+        return true;
+    }
+
+
 
 
 
@@ -231,3 +264,59 @@ $("a").click(function(e){
     e.preventDefault();
 });
 */
+
+
+
+/*
+//<!--
+google.load("jquery", "1.3");
+
+
+
+google.setOnLoadCallback(function() {
+    $('.location a').show().toggle(function() {
+        $('.hide', $(this).parent()).show();
+    }, function() {
+        $('.hide', $(this).parent()).hide();
+    });
+
+
+
+    $('td.plural').each(function(i) {
+        var td = $(this), trY = parseInt(td.closest('tr').offset().top);
+        $('textarea', $(this).closest('tr')).each(function(j) {
+            var textareaY=  parseInt($(this).offset().top) - trY;
+            $($('.part',td).get(j)).css('top',textareaY + 'px');
+        });
+    });
+
+    $('.translation textarea').blur(function() {
+        if($(this).val()) {
+            $('.alert', $(this).parents('tr')).remove();
+            var RX = /%(?:\([^\s\)]*\))?[sdf]/g,
+                origs=$('.original', $(this).parents('tr')).html().match(RX),
+                trads=$(this).val().match(RX),
+                error = $('<span class="alert">Unmatched variables</span>');
+            if (origs && trads) {
+                for (var i = trads.length; i--;){
+                    var key = trads[i];
+                    if (-1 == $.inArray(key, origs)) {
+                        $(this).before(error)
+                        return false;
+                    }
+                }
+                return true;
+            } else {
+                if (!(origs === null && trads === null)) {
+                    $(this).before(error);
+                    return false;
+                }
+            }
+            return true;
+        }
+    });
+
+    $('.translation textarea').eq(0).focus();
+
+});
+    */

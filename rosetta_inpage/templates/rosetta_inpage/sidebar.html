@@ -8,8 +8,8 @@
 
         <ul>
             <li><a href="javascript:void(0)" onclick="RosettaInpage.github();" title="Commit to GitHub"><img src="{{ STATIC_URL }}rosetta_inpage/img/glyphicons/glyphicons_401_github.png" width="24" height="24"/></a></li>
-            <li><a href="javascript:void(0)" onclick="RosettaInpage.reload();" title="Reload page"><img src="{{ STATIC_URL }}rosetta_inpage/img/glyphicons/glyphicons_081_refresh.png" width="24" height="24"/></a></li>
-            <li><a href="/rosetta_inpage/pick" target="_blank" title="Go to translation admin"><img src="{{ STATIC_URL }}rosetta_inpage/img/glyphicons/glyphicons_355_bullhorn.png" width="24" height="24"/></a></li>
+            <!--<li><a href="javascript:void(0)" onclick="RosettaInpage.reload();" title="Reload page"><img src="{{ STATIC_URL }}rosetta_inpage/img/glyphicons/glyphicons_081_refresh.png" width="24" height="24"/></a></li>-->
+            <li><a href="/rosetta_inpage/pick/?filter=third-party" target="_blank" title="Go to translation admin"><img src="{{ STATIC_URL }}rosetta_inpage/img/glyphicons/glyphicons_355_bullhorn.png" width="24" height="24"/></a></li>
         </ul>
     </div>
     <div class="rosetta-inpage-content">
@@ -35,12 +35,14 @@
 
 <div class="rosetta-inpage-form" id="rosetta-inpage-form">
     <form action="{% url rosetta-inpage-message %}" method="post">
+        <div class="rosetta-inpage-alert"><strong>Oh snap!</strong> Unmatched variables</div>
         {% csrf_token %}
         <input type="hidden" name="source" value=""/>
         <input type="hidden" name="lang" value="{{ rosetta_inpage_translate_to }}"/>
-        <textarea cols="60" rows="6" name="msg"></textarea><br/>
         <input type="hidden" name="next" value=""/>
-        <input type="submit" name="submit" value="Save"/>
+
+        <textarea cols="60" rows="6" name="msg" tabindex="3001"></textarea>
+        <input type="submit" name="submit" value="Save" tabindex="3002"/>
     </form>
 </div>
 

@@ -55,3 +55,26 @@ def encode(message):
     except UnicodeEncodeError:
         return message.encode('utf-8')
 
+
+
+"""
+    var PATTERN = /%(?:\([^\s\)]*\))?[sdf]/g;
+
+    function validateVariables(source, newbie){
+        if(!source || !newbie){
+            return false;
+        }
+
+        var matches_source = source.match(PATTERN);
+        var matches_newbie = newbie.match(PATTERN);
+
+        if(matches_source && matches_newbie && matches_source.length != matches_newbie.length){
+            return false;
+        } else if(matches_source || matches_newbie){
+            return false;
+        }
+
+        return true;
+    }
+
+"""
