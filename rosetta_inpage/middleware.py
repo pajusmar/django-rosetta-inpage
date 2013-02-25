@@ -7,7 +7,7 @@ from django.utils.html import mark_safe
 from rosetta_inpage import hash
 from rosetta_inpage.conf import EDIT_MODE, MESSAGES
 from rosetta_inpage.patches import THREAD_LOCAL_STORAGE
-from rosetta_inpage.utils import encode, escape, get_language_catalog
+from rosetta_inpage.utils import encode, get_language_catalog
 
 
 class TranslateMiddleware(object):

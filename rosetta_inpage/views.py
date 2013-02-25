@@ -48,15 +48,25 @@ class MessageView(View):
         #print "Post 1 = ", str(source), ", ", str(target_locale), ", ", str(target_msg)
         #print "Post 1.1 = ", str(settings.SOURCE_LANGUAGE_CODE), ", ", str(request.LANGUAGE_CODE)
 
+        from django.utils.translation.trans_real import get_language
         from rosetta import storage
         from rosetta.poutil import find_pos
         from rosetta.polib import pofile
+        from rosetta_inpage.utils import get_language_catalog
 
         # file_ = find_pos(langid, project_apps=project_apps, django_apps=django_apps,
         # third_party_apps=third_party_apps)[int(idx)]
         stor = storage.get_storage(request)
         pos = find_pos('nl-nl', third_party_apps=True)
         print "Post 2 = ", repr(stor), ", ", repr(pos)
+
+        lang = get_language()
+        catalog = get_language_catalog(lang)
+        translated = catalog.dict.get(source, None)
+
+        if translated:
+            print "Test"
+            translated.msgstr = target_msg
 
         for p in pos:
             file = pofile(p)
@@ -67,3 +77,13 @@ class MessageView(View):
             'status': 'ok',
         }
 
+"""
+        #print "String = " + repr(message) + ", " + str(hash(message))
+        #id = hash(message)
+        #return mark_safe('<span contenteditable="false" id="' + id + '">' + original(message) + '</span>')
+
+        if translated:
+            return translated.msgstr
+        else:
+            return original(message)
+"""

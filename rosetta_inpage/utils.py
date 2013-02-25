@@ -44,6 +44,7 @@ def get_language_catalog(language):
 
 def encode(message):
     """
+    TODO: check encoding source
 
     @param message:
     @type message: str
@@ -54,17 +55,3 @@ def encode(message):
     except UnicodeEncodeError:
         return message.encode('utf-8')
 
-
-def escape(message):
-    """
-
-    @param message:
-    @type message: str
-    @return:
-    """
-    #return message.replace('<', '&lt;').replace('>', '&gt;')
-    return message.replace('&', '&amp;') \
-        .replace('<', '&lt;') \
-        .replace('>', '&gt;') \
-        .replace('"', '&quot;') \
-        .replace("'", '&#39;')

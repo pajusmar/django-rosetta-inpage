@@ -19,12 +19,21 @@ def _new_ugettext(message):
     if mode:
         messages = getattr(THREAD_LOCAL_STORAGE, MESSAGES)
         messages.add(message)
-        setattr(THREAD_LOCAL_STORAGE, MESSAGES, messages)
+        #setattr(THREAD_LOCAL_STORAGE, MESSAGES, messages)
 
         #print "String = " + repr(message) + ", " + str(hash(message))
         #id = hash(message)
         #return mark_safe('<span contenteditable="false" id="' + id + '">' + original(message) + '</span>')
-        return original(message)
+        from django.utils.translation.trans_real import get_language
+        from rosetta_inpage.utils import get_language_catalog
+        lang = get_language()
+        catalog = get_language_catalog(lang)
+        #return original(message)
+        translated = catalog.dict.get(message, None)
+        if translated:
+            return translated.msgstr
+        else:
+            return original(message)
     else:
         return original(message)
 
