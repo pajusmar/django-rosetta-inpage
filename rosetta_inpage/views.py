@@ -1,24 +1,22 @@
 import logging
 import simplejson
 
-from django.conf import settings
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import View
 from django.utils.translation import trans_real
-from rosetta_inpage.utils import validate_variables
 import subprocess
 
 logger = logging.getLogger(__name__)
 
 
 def json_rsponse(view):
-    '''
+    """
     Decorator view to generate a json response
 
     @param view:
     @return:
-    '''
+    """
     def _json_response(*args, **kwargs):
         result = view(*args, **kwargs)
 
@@ -57,9 +55,11 @@ class MessageView(View):
         else:
             locale = to_locale(get_language())
 
-        result = save_message(source, target_msg, locale, request)
-        print "Test=", str(result)
-        return result
+        files = save_message(source, target_msg, locale, request)
+        return {
+            'files': files,
+            'msg': target_msg,
+        }
 
 
 class GitHubView(View):

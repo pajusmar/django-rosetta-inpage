@@ -7,7 +7,7 @@ from django.utils.html import mark_safe
 from rosetta_inpage import hash
 from rosetta_inpage.conf import EDIT_MODE, MESSAGES
 from rosetta_inpage.patches import THREAD_LOCAL_STORAGE
-from rosetta_inpage.utils import encode, get_language_catalog
+from rosetta_inpage.utils import encode, get_locale_catalog
 
 
 class TranslateMiddleware(object):
@@ -17,7 +17,7 @@ class TranslateMiddleware(object):
     """
     def is_edit_mode(self, request):
         #return request.GET.get('translate', 'False').lower() == 'true' and request.user.is_staff
-        return request.user.is_staff
+        return request.user.is_staff and getattr(settings, 'ROSETTA_INPAGE', False)
 
     def process_request(self, request):
         """
@@ -54,7 +54,7 @@ class TranslateMiddleware(object):
 
         messages = getattr(THREAD_LOCAL_STORAGE, MESSAGES, set())
         viewer = messages_viewer(messages)
-        percentage = 100 * float(viewer[1])/float(len(messages))
+        percentage = 100 * float(viewer[1]) / float(len(messages))
         dictionary = {
             'rosetta_inpage': {
                 'messages': viewer[0],
@@ -78,21 +78,23 @@ def messages_viewer(list_messages):
     """
     Use the original translate function instead of the patched one
     """
-    from django.utils.translation.trans_real import get_language
+    from django.utils.translation.trans_real import get_language, to_locale
     from rosetta_inpage.patches import original as _  # The original
 
     results = []
-    lang = get_language()
-    catalog = get_language_catalog(lang)
+    locale = to_locale(get_language())
+    catalog = get_locale_catalog(locale)
     translated_count = 0
 
     def create(msg):
         translated = catalog.dict.get(msg, None)
-        is_valid_translation = True if translated and translated.msgstr is not u"" or None and not translated.obsolete else False
+        is_valid_translation = True if translated and translated.msgstr is not u"" or None \
+            and not translated.obsolete else False
 
-        #if translated:
+        # if translated:
         #    print "\n\n", str(is_valid_translation), ", "
-        #    print "Test= ", msg, translated, "==", encode(translated.msgstr), ", file=", str(translated.pfile), "obs=", str(translated.obsolete), "\n"
+        #    print "Test= ", msg, translated, "==", encode(translated.msgstr), \
+        #        ", file=", str(translated.pfile), "obs=", str(translated.obsolete), "\n"
 
         if is_valid_translation:
             msg_target = translated.msgstr
@@ -114,33 +116,3 @@ def messages_viewer(list_messages):
             translated_count += 1
 
     return results, translated_count
-
-
-"""
-    def post(self, request):
-        source = request.POST.get('source', '')
-        target_locale = request.POST.get('lang', '')
-        target_msg = request.POST.get('msg', '')
-        print "Post 1 = ", str(source), ", ", str(target_locale), ", ", str(target_msg)
-        print "Post 1.1 = ", str(settings.SOURCE_LANGUAGE_CODE), ", ", str(request.LANGUAGE_CODE)
-
-        from rosetta import storage
-        from rosetta.poutil import find_pos
-        from rosetta.polib import pofile
-
-        # file_ = find_pos(langid, project_apps=project_apps, django_apps=django_apps, third_party_apps=third_party_apps)[int(idx)]
-        stor = storage.get_storage(request)
-        pos = find_pos('nl-nl', third_party_apps=True)
-        print "Post 2 = ", repr(stor), ", ", repr(pos)
-
-        for p in pos:
-            file = pofile(p)
-            msg = file.find(source)
-            print "Msg = ", repr(msg), ", ", str(p)
-
-        return {
-            'status': 'ok',
-        }
-"""
-
-

@@ -4,7 +4,7 @@ import os
 import re
 
 from django.utils.translation import to_locale
-from django.utils.translation.trans_real import get_language
+from django.utils.translation.trans_real import get_language, to_locale
 
 from rosetta import storage
 from rosetta.polib import pofile
@@ -15,7 +15,7 @@ from rosetta.poutil import find_pos
 _catalogs = {}
 
 
-def get_language_catalog(locale):
+def get_locale_catalog(locale):
     """
     Fetch the complete message catalog for a certain locale.  Messages or spread across different po files.
     To check if a message is translated or not you'll need this catalog, iterating over the po files is way to slow.
@@ -28,6 +28,7 @@ def get_language_catalog(locale):
     if not locale:
         raise ValueError('Invalid locale: %s' % locale)
 
+    #print "Locale =", locale, ", Catalogs=", str(len(_catalogs))
     catalog = _catalogs.get(locale, None)
     if catalog is not None:
         return catalog
@@ -70,6 +71,20 @@ def encode(message):
         return message.encode('utf-8')
 
 
+def get_message(msgid, locale=None):
+    """
+    Fetch a message for a locale from the catalog
+
+    @param msgid:
+    @param locale:
+    @return:
+    """
+    if not locale:
+        locale = to_locale(get_language())
+    catalog = get_locale_catalog(locale)
+    return catalog.dict.get(msgid, None)
+
+
 def save_message(msgid, msgtxt, locale, request):
     """
     Saves a translated message (msgtxt) to all the po files that have the msgid
@@ -88,7 +103,7 @@ def save_message(msgid, msgtxt, locale, request):
     # third_party_apps=third_party_apps)[int(idx)]
     #stor = storage.get_storage(request)
     files = []
-    catalog = get_language_catalog(locale)
+    catalog = get_locale_catalog(locale)
     pofiles = find_pos(locale, third_party_apps=True)
 
     #print "Post 1 = ", str(source), ", ", str(target_locale), ", ", str(target_msg)
@@ -131,8 +146,11 @@ def validate_variables(original, target):
     @param target:
     @return:
     """
-    #original = 'This website uses cookies. Why? Click <a href="/%(country_code)s/%(language)s/conditions/cookies/" title="Cookie policy">here</a> for more information.'
-    #target = 'Deze website gebruikt cookies. Waarom? Klik <a href="/%(country_code)s/%(language)s/conditions/cookies/" title="Cookie policy">hier</a> voor meer informatie.'
+    # original = 'This website uses cookies. Why? Click <a href="/%(country_code)s/%(language)s/conditions/cookies/" ' \
+    #            'title="Cookie policy">here</a> for more information.'
+    # target = 'Deze website gebruikt cookies. Waarom? Klik ' \
+    #          '<a href="/%(country_code)s/%(language)s/conditions/cookies/" ' \
+    #          'title="Cookie policy">hier</a> voor meer informatie.'
 
     if original and target:
         result1 = PATTERN.findall(original)

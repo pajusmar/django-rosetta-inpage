@@ -13,12 +13,11 @@ __version__ = get_version()
 
 
 def hash(text):
-    '''
+    """
 
     @param text:
     @return:
-    '''
-
+    """
     encoding = text.encode("UTF-16LE")
     md5 = hashlib.md5()
     md5.update(encoding)

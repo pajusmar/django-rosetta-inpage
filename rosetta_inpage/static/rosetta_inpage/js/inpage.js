@@ -27,7 +27,7 @@
     /**
      * Some internal references to DOM elements to have quick access
      */
-    var $form, $alert;
+    var $form, $alert, $sidebar, $loading;
 
 
     /**
@@ -37,29 +37,38 @@
     var Form = {};
 
 
+    function initDomElements(){
+        $sidebar = $('#' + ID_SIDEBAR);
+        $loading = $('#' + PREFIX + '-loading');
+
+        $form = $('#' + ID_FORM);
+        $alert = $form.find('.rosetta-inpage-alert');
+    }
+
     /**
      * Initialize all links in the sidebar.  When the user clicks on it the form to translate will appear
      */
     function initLinks(){
-        $('#' + ID_SIDEBAR + ' .' + PREFIX + '-content  a').click(function(e){
+        var eventHandler = function(e){
             var pos = $(this).position();
             var width = $(this).outerWidth();
-            var form = $('#' + ID_FORM);
 
-            var input = form.find('input[name="source"]');
-            var textarea = form.find('textarea');
+            var input = $form.find('input[name="source"]');
+            var textarea = $form.find('textarea');
 
-            var source = $(this).parent().find('code[type="source"]').html();
-            var msg = $(this).parent().find('code[type="msg"]').html();
+            var source = $(this).parent().find('code[type=source]').html();
+            var msg = $(this).parent().find('code[type=msg]').html();
 
             var source_stripped = source.substring(4, source.length-3);
             var msg_stripped = msg.substring(4, msg.length-3);
 
-            var next = $(this).parent().next();
-            form.find('input[name="next"]').val(next.children(':first').attr('id'));
+            var current = $(this).parent();
+            var next = current.next();
+            $form.find('input[name=current]').val(current.attr('id'));
+            $form.find('input[name=next]').val(next.attr('id'));
 
-            form.show();
-            form.css({
+            $form.show();
+            $form.css({
                 'top': pos['top'],
                 'left': pos['left'] + width
             });
@@ -70,17 +79,12 @@
             moveCursorToEnd(textarea);
 
 
-            $('#' + ID_SIDEBAR + ' a').removeClass("active");
+            $sidebar.find('a').removeClass("active");
             $(this).addClass("active");
             e.stopPropagation();
+        };
 
-            /*
-             source = request.POST.get('source', '')
-             target_locale = request.POST.get('lang', '')
-             target_msg = request.POST.get('msg', '')
-             print "Banaan = ", str(source), ", ", str(target_locale), ", ", str(target_msg)
-             */
-        });
+        $sidebar.find('.' + PREFIX + '-content  a').click(eventHandler);
     }
 
 
@@ -89,44 +93,53 @@
      * Depends on http://cdnjs.cloudflare.com/ajax/libs/jquery.form/3.24/jquery.form.js
      */
     function initForm(){
-        $form = $('#' + ID_FORM);
-        $alert = $form.find('.rosetta-inpage-alert');
+        var _onBeforeSubmit = function(data, jqForm, options){
+            var source = $(jqForm).find('input[name="source"]').val();
+            var msg = $(jqForm).find('textarea[name="msg"]').val();
+            var valid_code = validateVariables(source, msg);
+
+
+            if(valid_code == 200){
+                $form.find('textarea').attr('disabled', 'disabled');
+                $form.find('input[type=submit]')
+                    .attr('value', 'Saving ...')
+                    .attr('disabled', 'disabled');
+                showLoading();
+                return true;
+            } else {
+                if(404 === valid_code){
+                    Form.showAlert('<strong>Major oopsie!</strong> The message can\'t be empty');
+                } else {
+                    Form.showAlert('<strong>Oh snap!</strong> Unmatched variables');
+                }
+                return false;
+            }
+        };
+
+        var _onSuccess = function(responseText, statusText, xhr, jqForm){
+            $form.find('textarea').removeAttr('disabled');
+            $form.find('input[type="submit"]').attr('value', 'Save').removeAttr('disabled');
+
+            $sidebar.find('.active').parent().removeClass('rosetta-inpage-todo');
+            var currentId = $form.find('input[name=current]').val();
+            var nextId = $(jqForm).find('input[name=next]').val();
+
+            $('#' + nextId + ' a').trigger('click');
+            $('#' + currentId + ' code[type=msg]').html('<!--' + responseText['msg'] + '-->');
+            hideLoading();
+        };
+
+        var _onError = function(){
+            Form.thaw();
+            Form.showAlert('<strong>Oh No, George!</strong> Something terrible happened, contact a techie');
+        };
+
 
         $form.find('textarea[name="msg"]').focus(Form.hideAlert);
         $form.find("form").ajaxForm({
-            beforeSubmit: function(data, jqForm, options){
-                var source = $(jqForm).find('input[name="source"]').val();
-                var msg = $(jqForm).find('textarea[name="msg"]').val();
-                var is_valid = validateVariables(source, msg);
-
-                if(!is_valid){
-                    Form.showAlert('<strong>Oh snap!</strong> Unmatched variables');
-                    return false;
-                } else {
-                    $form.find('textarea').attr('disabled', 'disabled');
-                    $form.find('input[type=submit]')
-                        .attr('value', 'Saving ...')
-                        .attr('disabled', 'disabled');
-                    showLoading();
-                    return true;
-                }
-            },
-
-            success: function(responseText, statusText, xhr, jqForm){
-                //console.log(JSON.stringify(responseText) + ", " + statusText);
-                $form.find('textarea').removeAttr('disabled');
-                $form.find('input[type="submit"]').attr('value', 'Save').removeAttr('disabled');
-
-                $('#' + ID_SIDEBAR).find('.active').parent().removeClass('rosetta-inpage-todo');
-                var nextId = $(jqForm).find('input[name="next"]').val();
-                $('#' + nextId).trigger('click');
-                hideLoading();
-            },
-
-            error: function(){
-                Form.thaw();
-                Form.showAlert('<strong>Oh No, George!</strong> Something terrible happened, contact a techie');
-            }
+            beforeSubmit: _onBeforeSubmit,
+            success: _onSuccess,
+            error: _onError
         });
     }
 
@@ -139,7 +152,7 @@
             e.stopPropagation();
         });
 
-        $('#' + ID_SIDEBAR).scroll(Form.hide);
+        $sidebar.scroll(Form.hide);
         $(document).click(Form.hide);
     }
 
@@ -160,14 +173,14 @@
     function showLoading(){
         //$('#' + PREFIX + '-loading').fadeIn('slow');
         //$('#' + PREFIX + '-loading').fadeIn();
-        $('#' + PREFIX + '-loading').show();
+        $loading.show();
     }
 
 
     function hideLoading(){
         //$('#' + PREFIX + '-loading').fadeOut('slow');
         //$('#' + PREFIX + '-loading').fadeOut();
-        $('#' + PREFIX + '-loading').hide();
+        $loading.hide();
     }
 
 
@@ -175,25 +188,25 @@
 
     function validateVariables(source, newbie){
         if(!source || !newbie){
-            return false;
+            return 404;
         }
 
         var matches_source = source.match(PATTERN);
         var matches_newbie = newbie.match(PATTERN);
 
         if(matches_source && matches_newbie && matches_source.length != matches_newbie.length){
-            return false;
+            return 406;
         } else if(matches_source || matches_newbie){
-            return false;
+            return 406;
         }
 
-        return true;
+        return 200;
     }
 
 
     Form.hide = function(e){
         $form.hide();
-        $('#' + ID_SIDEBAR + ' a').removeClass("active");
+        $sidebar.find('a').removeClass("active");
     };
 
 
@@ -204,7 +217,6 @@
             .attr('disabled', 'disabled');
         showLoading();
     };
-
 
     Form.thaw = function(){
         $form.find('textarea').removeAttr('disabled');
@@ -221,13 +233,9 @@
         $alert.fadeOut('slow');
     };
 
-    /*
-     var $alert = $form.find('.rosetta-inpage-alert');
 
-     $form.find('textarea[name="msg"]').focus(function(){
-     $alert.fadeOut('slow');
-     });
-     */
+
+
 
 
 
@@ -239,6 +247,7 @@
      *
      */
     Inpage.init = function(){
+        initDomElements();
         initLinks();
         initForm();
         initPage();
@@ -247,19 +256,6 @@
     Inpage.reload = function(){
         showLoading();
         window.location.reload();
-
-//        var url = window.location;
-//
-//        $.get(url, function(data) {
-//            data = data.replace(/<(\/)?body([^>]*)>/g, '<body>');
-//            var indexBegin = data.indexOf('<body>');
-//            var indexEnd = data.indexOf('<!--ROSETTA_INPAGE_BEGIN-->');
-//            alert(indexBegin + ", " + indexEnd);
-//            var s = data.substring(indexBegin+6, indexEnd);
-//            console.log(s);
-//            $('body').html(s);
-//        });
-
         return false;
     };
 
@@ -267,7 +263,7 @@
         showLoading();
         $.post(ROOT + "/ajax/github", function(data){
             hideLoading();
-            console.log(JSON.stringify(data));
+            //console.log(JSON.stringify(data));
             alert(JSON.stringify(data));
         });
     };
@@ -280,6 +276,8 @@
         window.RosettaInpage = Inpage;
     }
 })(window, document);
+
+
 
 
 

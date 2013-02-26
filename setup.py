@@ -26,5 +26,8 @@ setup(
         ],
     requires=[
         'django',
+	'django-rosetta',
     ],
 )
+
+

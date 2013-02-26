@@ -20,7 +20,7 @@
             this will do a server request for the image.
             -->
             {% for msg in rosetta_inpage.messages %}
-            <li {% if not msg.translated %}class="rosetta-inpage-todo"{% endif %}><a href="javascript:void(0)" id="s-{{ msg.hash }}">{{ msg.show }}</a>
+            <li id="s-{{ msg.hash }}" {% if not msg.translated %}class="rosetta-inpage-todo"{% endif %}><a href="javascript:void(0)">{{ msg.show }}</a>
                 <code type="source" data-inpage="{'translated':'{{ msg.translated|lower }}'}"><!--{{ msg.source }}--></code>
                 <code type="msg"><!--{{ msg.msg }}--></code>
             </li>
@@ -39,6 +39,7 @@
         {% csrf_token %}
         <input type="hidden" name="source" value=""/>
         <input type="hidden" name="lang" value="{{ rosetta_inpage_translate_to }}"/>
+        <input type="hidden" name="current" value=""/>
         <input type="hidden" name="next" value=""/>
 
         <textarea cols="60" rows="6" name="msg" tabindex="3001"></textarea>
