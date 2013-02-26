@@ -25,9 +25,16 @@
 
 
     /**
+     * Some internal references to DOM elements to have quick access
+     */
+    var $form, $alert;
+
+
+    /**
      * Define the namespace. All functions in this namespace are public.
      */
     var Inpage = {};
+    var Form = {};
 
 
     /**
@@ -82,13 +89,10 @@
      * Depends on http://cdnjs.cloudflare.com/ajax/libs/jquery.form/3.24/jquery.form.js
      */
     function initForm(){
-        var $form = $('#' + ID_FORM);
-        var $alert = $form.find('.rosetta-inpage-alert');
+        $form = $('#' + ID_FORM);
+        $alert = $form.find('.rosetta-inpage-alert');
 
-        $form.find('textarea[name="msg"]').focus(function(){
-            $alert.fadeOut('slow');
-        });
-
+        $form.find('textarea[name="msg"]').focus(Form.hideAlert);
         $form.find("form").ajaxForm({
             beforeSubmit: function(data, jqForm, options){
                 var source = $(jqForm).find('input[name="source"]').val();
@@ -96,7 +100,7 @@
                 var is_valid = validateVariables(source, msg);
 
                 if(!is_valid){
-                    $alert.show();
+                    Form.showAlert('<strong>Oh snap!</strong> Unmatched variables');
                     return false;
                 } else {
                     $form.find('textarea').attr('disabled', 'disabled');
@@ -117,6 +121,11 @@
                 var nextId = $(jqForm).find('input[name="next"]').val();
                 $('#' + nextId).trigger('click');
                 hideLoading();
+            },
+
+            error: function(){
+                Form.thaw();
+                Form.showAlert('<strong>Oh No, George!</strong> Something terrible happened, contact a techie');
             }
         });
     }
@@ -126,22 +135,12 @@
      * Configure general events and controls
      */
     function initPage(){
-        $('#' + ID_FORM).click(function(e){
+        $form.click(function(e){
             e.stopPropagation();
         });
 
-        $('#' + ID_SIDEBAR).scroll(hideForm);
-        $(document).click(hideForm);
-    }
-
-
-    /**
-     *
-     * @param [e]
-     */
-    function hideForm(e){
-        $('#' + ID_FORM).hide();
-        $('#' + ID_SIDEBAR + ' a').removeClass("active");
+        $('#' + ID_SIDEBAR).scroll(Form.hide);
+        $(document).click(Form.hide);
     }
 
 
@@ -190,6 +189,45 @@
 
         return true;
     }
+
+
+    Form.hide = function(e){
+        $form.hide();
+        $('#' + ID_SIDEBAR + ' a').removeClass("active");
+    };
+
+
+    Form.freeze = function(){
+        $form.find('textarea').attr('disabled', 'disabled');
+        $form.find('input[type=submit]')
+            .attr('value', 'Saving ...')
+            .attr('disabled', 'disabled');
+        showLoading();
+    };
+
+
+    Form.thaw = function(){
+        $form.find('textarea').removeAttr('disabled');
+        $form.find('input[type="submit"]').attr('value', 'Save').removeAttr('disabled');
+        hideLoading();
+    };
+
+    Form.showAlert = function(message){
+        $alert.html(message);
+        $alert.show();
+    };
+
+    Form.hideAlert = function(){
+        $alert.fadeOut('slow');
+    };
+
+    /*
+     var $alert = $form.find('.rosetta-inpage-alert');
+
+     $form.find('textarea[name="msg"]').focus(function(){
+     $alert.fadeOut('slow');
+     });
+     */
 
 
 

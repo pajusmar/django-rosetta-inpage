@@ -35,7 +35,7 @@
 
 <div class="rosetta-inpage-form" id="rosetta-inpage-form">
     <form action="{% url rosetta-inpage-message %}" method="post">
-        <div class="rosetta-inpage-alert"><strong>Oh snap!</strong> Unmatched variables</div>
+        <div class="rosetta-inpage-alert"></div>
         {% csrf_token %}
         <input type="hidden" name="source" value=""/>
         <input type="hidden" name="lang" value="{{ rosetta_inpage_translate_to }}"/>

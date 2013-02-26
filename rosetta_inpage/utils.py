@@ -1,34 +1,49 @@
 # -*- coding: utf-8 -*-
 import copy
+import os
 import re
+
+from django.utils.translation import to_locale
+from django.utils.translation.trans_real import get_language
+
+from rosetta import storage
 from rosetta.polib import pofile
 from rosetta.poutil import find_pos
-from django.utils.translation import to_locale
+
 
 # Holds a catalog of locale's in memory without fallback messages
 _catalogs = {}
 
 
-def get_language_catalog(language):
+def get_language_catalog(locale):
     """
+    Fetch the complete message catalog for a certain locale.  Messages or spread across different po files.
+    To check if a message is translated or not you'll need this catalog, iterating over the po files is way to slow.
+    This method consolidates all the messages a places them in a dictionary.
 
-    @param language:
-    @type language: str
-    @return:
+    @param locale: locale of the translation, e.g.: nl_NL, nl_BE, fr_BE,
+    @type locale: str
+    @return: POFile with an additional dictionary to quickly lookup a message
     """
-    locale = to_locale(language)
+    if not locale:
+        raise ValueError('Invalid locale: %s' % locale)
+
     catalog = _catalogs.get(locale, None)
     if catalog is not None:
         return catalog
 
     files = find_pos(locale, third_party_apps=True)
+    if len(files) == 0:
+        raise ValueError('Could not find any po files for locale: %s' % locale)
+
+    # Create a deep copy of of the po files
+    # This catalog is needed to check whether a message is translated or not, we don't wont the interfere
+    # with rosetta's logic ...
     catalog = copy.deepcopy(pofile(files[0]))
-    print "Language= ", repr(locale), repr(files), ", "
 
     # Join the other po files to the original
     for i in range(1, len(files)):
         deep = copy.deepcopy(pofile(files[i]))
-        print "Path = ", files[i]
         for entry in deep:
             entry.pfile = files[i]
             catalog.append(entry)
@@ -38,8 +53,6 @@ def get_language_catalog(language):
 
     #print "Catalog: ", repr(catalog)
     #print "Dict: ", repr(catalog.dict)
-    #print "Fetch: ", repr(catalog.dict['"You don’t need to grow a beard to become a Viking."'])
-    #return {}
     return catalog
 
 
@@ -55,6 +68,55 @@ def encode(message):
         return message.decode().encode('utf-8')
     except UnicodeEncodeError:
         return message.encode('utf-8')
+
+
+def save_message(msgid, msgtxt, locale, request):
+    """
+    Saves a translated message (msgtxt) to all the po files that have the msgid
+
+    @param msgid: msgid as it appears in the po files
+    @param msgtxt: message text
+    @param locale: locale of the translation, e.g.: nl_NL, nl_BE, fr_BE,
+    @param request: http request
+    @return: list with all the changed po files
+    """
+    # Validate the translated message, it must have the same amount of variable definitions
+    if not validate_variables(msgid, msgtxt):
+        raise ValueError('Invalid translation, unmatched variables')
+
+    # file_ = find_pos(langid, project_apps=project_apps, django_apps=django_apps,
+    # third_party_apps=third_party_apps)[int(idx)]
+    #stor = storage.get_storage(request)
+    files = []
+    catalog = get_language_catalog(locale)
+    pofiles = find_pos(locale, third_party_apps=True)
+
+    #print "Post 1 = ", str(source), ", ", str(target_locale), ", ", str(target_msg)
+    #print "Post 1.1 = ", str(settings.SOURCE_LANGUAGE_CODE), ", ", str(request.LANGUAGE_CODE)
+    #print "Post = ", repr(stor), ", ", repr(pos)
+
+    translated = catalog.dict.get(msgid, None)
+
+    # Update the message in the catalog
+    if translated:
+        translated.msgstr = msgtxt
+
+    # Save the translation in all the po files that have msgid
+    for path in pofiles:
+        pfile = pofile(path)
+        po_entry = pfile.find(msgid)
+
+        if po_entry:
+            po_entry.msgstr = msgtxt
+            po_entry.obsolete = False
+            pfile.save()
+            files.append(path)
+            #po_filepath, ext = os.path.splitext(p)
+            #save_as_mo_filepath = po_filepath + '.mo'
+            #file.save_as_mofile(save_as_mo_filepath)
+            #print "Msg = ", repr(po_entry), ", ", str(po_entry)
+
+    return files
 
 
 # Regex to find 'variable' definitions in a translatable string
