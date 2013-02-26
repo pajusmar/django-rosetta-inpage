@@ -5,9 +5,9 @@ from django.template import RequestContext
 from django.utils.html import mark_safe
 
 from rosetta_inpage import hash
-from rosetta_inpage.conf import EDIT_MODE, MESSAGES
+from rosetta_inpage.conf import EDIT_MODE, MESSAGES, VIEW_PARAM
 from rosetta_inpage.patches import THREAD_LOCAL_STORAGE
-from rosetta_inpage.utils import encode, get_locale_catalog
+from rosetta_inpage.utils import encode, get_locale_catalog, get_message
 
 
 class TranslateMiddleware(object):
@@ -16,6 +16,11 @@ class TranslateMiddleware(object):
     After the response content is rendered this middleware will insert the html
     """
     def is_edit_mode(self, request):
+        from django.utils.translation.trans_real import get_language, to_locale
+        locale = to_locale(get_language())
+        if 'en' in locale:
+            return False
+
         #return request.GET.get('translate', 'False').lower() == 'true' and request.user.is_staff
         return request.user.is_staff and getattr(settings, 'ROSETTA_INPAGE', False)
 
@@ -53,7 +58,8 @@ class TranslateMiddleware(object):
             return response
 
         messages = getattr(THREAD_LOCAL_STORAGE, MESSAGES, set())
-        viewer = messages_viewer(messages)
+        view_locale = request.GET.get(VIEW_PARAM, None)
+        viewer = messages_viewer(messages, view_locale)
         percentage = 100 * float(viewer[1]) / float(len(messages))
         dictionary = {
             'rosetta_inpage': {
@@ -74,7 +80,7 @@ class TranslateMiddleware(object):
         return response
 
 
-def messages_viewer(list_messages):
+def messages_viewer(list_messages, view_locale=None):
     """
     Use the original translate function instead of the patched one
     """
@@ -86,8 +92,8 @@ def messages_viewer(list_messages):
     catalog = get_locale_catalog(locale)
     translated_count = 0
 
-    def create(msg):
-        translated = catalog.dict.get(msg, None)
+    def create(msgid):
+        translated = catalog.dict.get(msgid, None)
         is_valid_translation = True if translated and translated.msgstr is not u"" or None \
             and not translated.obsolete else False
 
@@ -99,15 +105,22 @@ def messages_viewer(list_messages):
         if is_valid_translation:
             msg_target = translated.msgstr
         else:
-            msg_target = _(msg)
+            msg_target = _(msgid)
 
         return {
-            'show': encode(msg),
-            'hash': hash(msg),
+            'show': show_message(msgid, view_locale),
+            'hash': hash(msgid),
             'source': mark_safe(msg),       # the source message
             'msg': mark_safe(msg_target),   # the translated message
             'translated': is_valid_translation,
         }
+
+    def show_message(msgid, view_locale=None):
+        if view_locale:
+            poentry = get_message(msgid, view_locale)
+            if poentry and poentry.msgstr:
+                return encode(poentry.msgstr)
+        return encode(msgid)
 
     for msg in list_messages:
         item = create(msg)

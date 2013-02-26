@@ -259,6 +259,21 @@
         return false;
     };
 
+    Inpage.view = function(){
+        showLoading();
+        var location = window.location.href;
+        var target;
+
+        if(location.indexOf('?')>-1){
+            location += "&";
+        } else {
+            location += "?";
+        }
+
+        window.location.href = location + "rosette_inpage_lang=nl_BE";
+        return false;
+    };
+
     Inpage.github = function(){
         showLoading();
         $.post(ROOT + "/ajax/github", function(data){

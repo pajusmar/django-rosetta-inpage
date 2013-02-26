@@ -7,9 +7,27 @@
         <p {% ifequal rosetta_inpage.stats.translated rosetta_inpage.stats.count%}class="translated"{% endifequal %}>{{ rosetta_inpage.stats.translated }} / {{ rosetta_inpage.stats.count }} (<strong>{{ rosetta_inpage.stats.percentage|floatformat:0 }}%</strong>)</p>
 
         <ul>
-            <li><a href="javascript:void(0)" onclick="RosettaInpage.github();" title="Commit to GitHub"><img src="{{ STATIC_URL }}rosetta_inpage/img/glyphicons/glyphicons_401_github.png" width="24" height="24"/></a></li>
-            <!--<li><a href="javascript:void(0)" onclick="RosettaInpage.reload();" title="Reload page"><img src="{{ STATIC_URL }}rosetta_inpage/img/glyphicons/glyphicons_081_refresh.png" width="24" height="24"/></a></li>-->
-            <li><a href="/rosetta_inpage/pick/?filter=third-party" target="_blank" title="Go to translation admin"><img src="{{ STATIC_URL }}rosetta_inpage/img/glyphicons/glyphicons_355_bullhorn.png" width="24" height="24"/></a></li>
+            <li>
+                <a href="javascript:void(0)" onclick="RosettaInpage.github();" title="Commit to GitHub">
+                    <img src="{{ STATIC_URL }}rosetta_inpage/img/glyphicons/glyphicons_401_github.png" width="24" height="24"/>
+                </a>
+            </li>
+            <!--
+            <li>
+                <a href="javascript:void(0)" onclick="RosettaInpage.reload();" title="Reload page">
+                    <img src="{{ STATIC_URL }}rosetta_inpage/img/glyphicons/glyphicons_081_refresh.png" width="24" height="24"/>
+            </a>
+            </li-->
+            <li>
+                <a href="javascript:void(0)" onclick="RosettaInpage.view()" title="Change view language">
+                    <img src="{{ STATIC_URL }}rosetta_inpage/img/glyphicons/glyphicons_340_globe.png" width="24" height="24"/>
+                </a>
+            </li>
+            <li>
+                <a href="/rosetta_inpage/pick/?filter=third-party" target="_blank" title="Go to translation admin">
+                    <img src="{{ STATIC_URL }}rosetta_inpage/img/glyphicons/glyphicons_355_bullhorn.png" width="24" height="24"/>
+                </a>
+            </li>
         </ul>
     </div>
     <div class="rosetta-inpage-content">
@@ -20,7 +38,8 @@
             this will do a server request for the image.
             -->
             {% for msg in rosetta_inpage.messages %}
-            <li id="s-{{ msg.hash }}" {% if not msg.translated %}class="rosetta-inpage-todo"{% endif %}><a href="javascript:void(0)">{{ msg.show }}</a>
+            <li id="s-{{ msg.hash }}" {% if not msg.translated %}class="rosetta-inpage-todo"{% endif %}>
+                <a href="javascript:void(0)">{{ msg.show }}</a>
                 <code type="source" data-inpage="{'translated':'{{ msg.translated|lower }}'}"><!--{{ msg.source }}--></code>
                 <code type="msg"><!--{{ msg.msg }}--></code>
             </li>
