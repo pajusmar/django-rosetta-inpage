@@ -1,9 +1,11 @@
 {% load i18n %}
 <!--ROSETTA_INPAGE_BEGIN-->
+<!--Cache: {% for key in rosetta_inpage.catalogs %}{{ key }}, {% endfor %}-->
 <div class="rosetta-inpage-sidebar" id="rosetta-inpage-sidebar">
     <div class="rosetta-inpage-header">
-        <!--<h1>Translate: {{rosetta_inpage.translate_from|upper}} &raquo; {{rosetta_inpage.translate_to|upper}}</h1>-->
-        <h1>Translate to: {{rosetta_inpage.translate_to|upper}}</h1>
+        <!--<h1>Translate: {{ rosetta_inpage.translate_from|upper }} &raquo; {{ rosetta_inpage.translate_to|upper }}</h1>-->
+        <h1>Translate to <strong>{{ rosetta_inpage.translate_to }}</strong></h1>
+        <span>Your are viewing in <strong>{{ rosetta_inpage.locale_view }}</strong></span>
         <p {% ifequal rosetta_inpage.stats.translated rosetta_inpage.stats.count%}class="translated"{% endifequal %}>{{ rosetta_inpage.stats.translated }} / {{ rosetta_inpage.stats.count }} (<strong>{{ rosetta_inpage.stats.percentage|floatformat:0 }}%</strong>)</p>
 
         <ul>
@@ -12,16 +14,16 @@
                     <img src="{{ STATIC_URL }}rosetta_inpage/img/glyphicons/glyphicons_401_github.png" width="24" height="24"/>
                 </a>
             </li>
-            <!--
             <li>
-                <a href="javascript:void(0)" onclick="RosettaInpage.reload();" title="Reload page">
-                    <img src="{{ STATIC_URL }}rosetta_inpage/img/glyphicons/glyphicons_081_refresh.png" width="24" height="24"/>
-            </a>
-            </li-->
-            <li>
-                <a href="javascript:void(0)" onclick="RosettaInpage.view()" title="Change view language">
+                <a href="javascript:void(0)" title="Change view language">
                     <img src="{{ STATIC_URL }}rosetta_inpage/img/glyphicons/glyphicons_340_globe.png" width="24" height="24"/>
                 </a>
+                <ul class="rosetta-inpage-dropdown">
+                    {% for locale in rosetta_inpage.locales %}
+                        <li><a href="javascript:void(0)" onclick="RosettaInpage.view('{{ locale.0 }}')" >{{ locale.1 }}</a></li>
+                    {% endfor %}
+                    <li><a href="javascript:void(0)" onclick="RosettaInpage.view()">Source</a></li>
+                </ul>
             </li>
             <li>
                 <a href="/rosetta_inpage/pick/?filter=third-party" target="_blank" title="Go to translation admin">

@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 import copy
-import os
 import re
 
+from django.conf import settings
 from django.utils.translation import to_locale
 from django.utils.translation.trans_real import get_language, to_locale
 
@@ -55,6 +55,14 @@ def get_locale_catalog(locale):
     #print "Catalog: ", repr(catalog)
     #print "Dict: ", repr(catalog.dict)
     return catalog
+
+
+def get_cached_catalogs():
+    """
+
+    @return:
+    """
+    return  _catalogs.keys()
 
 
 def encode(message):
@@ -159,3 +167,18 @@ def validate_variables(original, target):
     elif not original or not target:
         return False
 
+
+def get_supported_locales():
+    """
+
+    @return: list with tuples of the supported locales
+    """
+    array = list(settings.LANGUAGES)
+    new_array = []
+
+    for entry in array:
+        if 'en' not in entry[0]:
+            # new_array.append((entry[0], entry[1]))
+            new_array.append((to_locale(entry[0]), entry[1]))
+
+    return new_array

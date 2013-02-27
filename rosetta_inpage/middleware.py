@@ -5,9 +5,9 @@ from django.template import RequestContext
 from django.utils.html import mark_safe
 
 from rosetta_inpage import hash
-from rosetta_inpage.conf import EDIT_MODE, MESSAGES, VIEW_PARAM
+from rosetta_inpage.conf import EDIT_MODE, MESSAGES, COOKIE_PARAM
 from rosetta_inpage.patches import THREAD_LOCAL_STORAGE
-from rosetta_inpage.utils import encode, get_locale_catalog, get_message
+from rosetta_inpage import utils
 
 
 class TranslateMiddleware(object):
@@ -58,7 +58,7 @@ class TranslateMiddleware(object):
             return response
 
         messages = getattr(THREAD_LOCAL_STORAGE, MESSAGES, set())
-        view_locale = request.GET.get(VIEW_PARAM, None)
+        view_locale = request.COOKIES.get(COOKIE_PARAM, None)
         viewer = messages_viewer(messages, view_locale)
         percentage = 100 * float(viewer[1]) / float(len(messages))
         dictionary = {
@@ -66,6 +66,9 @@ class TranslateMiddleware(object):
                 'messages': viewer[0],
                 'translate_from': str(settings.SOURCE_LANGUAGE_CODE.split('-')[0]),
                 'translate_to': str(request.LANGUAGE_CODE),
+                'locales': utils.get_supported_locales(),
+                'catalogs': utils.get_cached_catalogs(),
+                'locale_view': view_locale if view_locale else settings.LANGUAGE_CODE,
                 'stats': {
                     'count': len(messages),
                     'translated': viewer[1],
@@ -89,13 +92,14 @@ def messages_viewer(list_messages, view_locale=None):
 
     results = []
     locale = to_locale(get_language())
-    catalog = get_locale_catalog(locale)
+    catalog = utils.get_locale_catalog(locale)
     translated_count = 0
 
     def create(msgid):
-        translated = catalog.dict.get(msgid, None)
-        is_valid_translation = True if translated and translated.msgstr is not u"" or None \
-            and not translated.obsolete else False
+        entry = catalog.dict.get(msgid, None)
+        # is_valid_translation = True if entry and entry.msgstr is not u"" or None \
+        #     and not entry.obsolete else False
+        is_valid_translation = True if entry and entry.translated() else False
 
         # if translated:
         #    print "\n\n", str(is_valid_translation), ", "
@@ -103,7 +107,7 @@ def messages_viewer(list_messages, view_locale=None):
         #        ", file=", str(translated.pfile), "obs=", str(translated.obsolete), "\n"
 
         if is_valid_translation:
-            msg_target = translated.msgstr
+            msg_target = entry.msgstr
         else:
             msg_target = _(msgid)
 
@@ -117,10 +121,10 @@ def messages_viewer(list_messages, view_locale=None):
 
     def show_message(msgid, view_locale=None):
         if view_locale:
-            poentry = get_message(msgid, view_locale)
+            poentry = utils.get_message(msgid, view_locale)
             if poentry and poentry.msgstr:
-                return encode(poentry.msgstr)
-        return encode(msgid)
+                return utils.encode(poentry.msgstr)
+        return utils.encode(msgid)
 
     for msg in list_messages:
         item = create(msg)

@@ -255,14 +255,23 @@
 
     Inpage.reload = function(){
         showLoading();
-        window.location.reload();
+        //window.location.reload();
+        window.location.href = window.location.href;
         return false;
     };
 
-    Inpage.view = function(){
+    Inpage.view = function(locale){
         showLoading();
+        var encoded = encodeURIComponent(window.location.href);
+        if(!locale){
+            locale = '';
+        }
+        window.location.href = ROOT + '/change-locale?page=' + encoded + '&locale=' + locale;
+
+
+
+        /*
         var location = window.location.href;
-        var target;
 
         if(location.indexOf('?')>-1){
             location += "&";
@@ -270,7 +279,8 @@
             location += "?";
         }
 
-        window.location.href = location + "rosette_inpage_lang=nl_BE";
+        window.location.href = location + 'rosette_inpage_lang=' + locale;
+        */
         return false;
     };
 

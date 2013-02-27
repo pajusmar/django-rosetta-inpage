@@ -21,10 +21,10 @@ def _new_ugettext(message):
         #id = hash(message)
         #return mark_safe('<span contenteditable="false" id="' + id + '">' + original(message) + '</span>')
         locale = to_locale(get_language())
-        translated = get_message(message, locale)
+        entry = get_message(message, locale)
 
-        if translated:
-            return mark_safe(translated.msgstr)
+        if entry and entry.translated():
+            return mark_safe(entry.msgstr)
         else:
             return original(message)
     else:

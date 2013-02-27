@@ -1,16 +1,18 @@
 import logging
 import simplejson
 
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import View
 from django.utils.translation import trans_real
+from rosetta_inpage.conf import COOKIE_PARAM
+from urlparse import urlparse
 import subprocess
 
 logger = logging.getLogger(__name__)
 
 
-def json_rsponse(view):
+def json_response(view):
     """
     Decorator view to generate a json response
 
@@ -28,8 +30,7 @@ def json_rsponse(view):
 
 
 class MessageView(View):
-
-    @json_rsponse
+    @json_response
     def get(self, request):
         source = request.GET.get('source', '')
         target_locale = request.GET.get('lang', '')
@@ -41,7 +42,7 @@ class MessageView(View):
         }
 
     @csrf_exempt
-    @json_rsponse
+    @json_response
     def post(self, request):
         from django.utils.translation.trans_real import to_locale, get_language
         from rosetta_inpage.utils import save_message
@@ -63,8 +64,7 @@ class MessageView(View):
 
 
 class GitHubView(View):
-
-    @json_rsponse
+    @json_response
     def get(self, request):
         return {
             'status': 'ok',
@@ -72,7 +72,7 @@ class GitHubView(View):
         }
 
     @csrf_exempt
-    @json_rsponse
+    @json_response
     def post(self, request):
         result = {}
         try:
@@ -124,4 +124,25 @@ class GitHubView(View):
         #    return 304, branch, 'everything up-to-date'
 
         return 200, branch, 'commit successful'
+
+
+class ChangeLocaleView(View):
+    @json_response
+    def get(self, request):
+        page = request.GET.get('page', None)
+        locale = request.GET.get('locale', None)
+
+        parsed = urlparse(page)
+        url = [parsed.path]
+        if parsed.query:
+            url.append('?')
+            url.append(parsed.query)
+
+        response = HttpResponseRedirect(''.join(url))
+        if locale:
+            expires = 365 * 24 * 60 * 60  # one year
+            response.set_cookie(COOKIE_PARAM, locale, expires)
+        else:
+            response.delete_cookie(COOKIE_PARAM)
+        return response
 
