@@ -11,10 +11,10 @@ setup(
     url='http://github.com/citylive/django-rosetta-inpage/',
     packages=['rosetta_inpage'],
     license='BSD',
-    include_package_data = True,
-    package_data = {'rosetta_inpage': ['templates/rosetta_inpage/*'],},
-    zip_safe = False,
-    classifiers = [
+    include_package_data=True,
+    package_data={'rosetta_inpage': ['templates/rosetta_inpage/*'], },
+    zip_safe=False,
+    classifiers=[
         'Development Status :: 1 - Alpha',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: BSD License',
@@ -23,11 +23,11 @@ setup(
         'Environment :: Web Environment',
         'Framework :: Django',
         'Topic :: Software Development :: Internationalization',
-        ],
-    requires=[
-        'django',
-	'django-rosetta',
     ],
+    install_requires=[
+        'Django >= 1.3',
+        'django-rosetta == 0.6.8'
+    ]
 )
 
 

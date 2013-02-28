@@ -267,20 +267,6 @@
             locale = '';
         }
         window.location.href = ROOT + '/change-locale?page=' + encoded + '&locale=' + locale;
-
-
-
-        /*
-        var location = window.location.href;
-
-        if(location.indexOf('?')>-1){
-            location += "&";
-        } else {
-            location += "?";
-        }
-
-        window.location.href = location + 'rosette_inpage_lang=' + locale;
-        */
         return false;
     };
 
