@@ -77,6 +77,7 @@ class GitHubView(View):
         result = {}
         try:
             answer = self.commit(request)
+            #answer = (200, 'branch/foobar', 'Foobar success')
             result['status'] = answer[0]
             result['branch'] = answer[1]
             result['message'] = answer[2]
@@ -85,7 +86,7 @@ class GitHubView(View):
             print traceback.format_exc()
             logger.exception('Could not execute translation commit')
             result['status'] = 500
-            result['message'] = 'Unexpected exception occurred, contact a techie'
+            result['message'] = 'Oh no, George! An unexpected exception crossed our paths, contact a techie'
         return result
 
     def commit(self, request):
@@ -123,7 +124,7 @@ class GitHubView(View):
         #if 'Everything up-to-date' in push:
         #    return 304, branch, 'everything up-to-date'
 
-        return 200, branch, 'commit successful'
+        return 200, branch, 'We got it! Commit successful'
 
 
 class ChangeLocaleView(View):

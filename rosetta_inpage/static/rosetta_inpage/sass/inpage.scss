@@ -112,6 +112,8 @@ $background-white: rgba(255, 255, 255, 0.5);
     color:$font-color-active;
     line-height: 1.2em;
     font-weight: normal;
+    //text-shadow: 0 1px 0 rgba(10, 10, 10, 0.5);
+    text-shadow: 0 1px 0 #333;
   }
 
   span{
@@ -336,7 +338,46 @@ $background-white: rgba(255, 255, 255, 0.5);
   display: none;
 }
 
+.rosetta-inpage-notify{
+  position: fixed;
+  top:10px;
+  left:10px;
+  z-index: ($z-index + 2);
+  padding: 5px 15px 5px 15px;
+  display: none;
+  width: ($sidebar-width - 60) + px;
+  cursor: default;
 
+  margin-bottom: 20px;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
+  background-color: #FCF8E3;
+  border: 1px solid #FBEED5;
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  border-radius: 4px;
+
+  &:first-letter{
+    text-transform: capitalize;
+  }
+
+  &.rosetta-inpage-alert-success{
+    color: #468847;
+    background-color: #DFF0D8;
+    border-color: #D6E9C6;
+  }
+
+  &.rosetta-inpage-alert-error{
+    color: #B94A48;
+    background-color: #F2DEDE;
+    border-color: #EED3D7;
+  }
+
+  &.rosetta-inpage-alert-info{
+    color: #3A87AD;
+    background-color: #D9EDF7;
+    border-color: #BCE8F1;
+  }
+}
 
 
 
@@ -357,20 +398,5 @@ span[contenteditable='false']:hover{
   color:black;
   background:rgba(255,255,255,0.8);
   cursor:text;
-}
-*/
-
-/* Some beautiful CSS
-=====================================*/
-/*
-.rosetta-inpage-notify{
-  position: fixed;
-  color: white;
-  padding: 5px 15px 5px 15px;
-  background-color: #960808;
-  z-index: 2001;
-
-  top:40px;
-  left:0;
 }
 */

@@ -37,14 +37,15 @@ def get_locale_catalog(locale):
     if len(files) == 0:
         raise ValueError('Could not find any po files for locale: %s' % locale)
 
-    # Create a deep copy of of the po files
     # This catalog is needed to check whether a message is translated or not, we don't wont the interfere
     # with rosetta's logic ...
-    catalog = copy.deepcopy(pofile(files[0]))
+    #catalog = copy.deepcopy(pofile(files[0]))
+    catalog = pofile(files[0])
 
     # Join the other po files to the original
     for i in range(1, len(files)):
-        deep = copy.deepcopy(pofile(files[i]))
+        #deep = copy.deepcopy(pofile(files[i]))
+        deep = pofile(files[i])
         for entry in deep:
             entry.pfile = files[i]
             catalog.append(entry)

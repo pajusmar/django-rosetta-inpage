@@ -27,7 +27,7 @@
     /**
      * Some internal references to DOM elements to have quick access
      */
-    var $form, $alert, $sidebar, $loading;
+    var $form, $alert, $sidebar, $loading, $notify;
 
 
     /**
@@ -42,7 +42,8 @@
         $loading = $('#' + PREFIX + '-loading');
 
         $form = $('#' + ID_FORM);
-        $alert = $form.find('.rosetta-inpage-alert');
+        $alert = $form.find('.' + PREFIX + '-alert');
+        $notify = $('#' + PREFIX + '-notify');
     }
 
     /**
@@ -203,6 +204,19 @@
         return 200;
     }
 
+    function notify(message, type, disableHide){
+        $notify.html(message);
+        $notify.attr('class', PREFIX + '-notify ' + PREFIX + '-alert-' + type);
+        $notify.fadeIn();
+        $notify.unbind('click');
+
+        if(!disableHide){
+            var fadeOut = function(){$notify.fadeOut();};
+            setTimeout(fadeOut, 6000);
+            $notify.click(fadeOut);
+        }
+    }
+
 
     Form.hide = function(e){
         $form.hide();
@@ -218,16 +232,19 @@
         showLoading();
     };
 
+
     Form.thaw = function(){
         $form.find('textarea').removeAttr('disabled');
         $form.find('input[type="submit"]').attr('value', 'Save').removeAttr('disabled');
         hideLoading();
     };
 
+
     Form.showAlert = function(message){
         $alert.html(message);
         $alert.show();
     };
+
 
     Form.hideAlert = function(){
         $alert.fadeOut('slow');
@@ -275,7 +292,14 @@
         $.post(ROOT + "/ajax/github", function(data){
             hideLoading();
             //console.log(JSON.stringify(data));
-            alert(JSON.stringify(data));
+            //alert(JSON.stringify(data));
+            if(200 === data['status']){
+                notify(data['message'], 'success');
+            }else if(500 === data['status']){
+                notify(data['message'], 'error', true);
+            }else{
+                notify(data['message'], 'info');
+            }
         });
     };
 
