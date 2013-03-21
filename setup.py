@@ -13,9 +13,9 @@ from setuptools import setup
 import rosetta_inpage
 
 LONG_DESCRIPTION = """\
-rosette_inpage is built of django-rosetta.  It allows you to translate django applications directly in a page, it adds
-an extra toolbar to each and lists all the strings that can be translated on that page. The changes are saved directly
-to the according po files.
+rosette_inpage is built on top of django-rosetta.  It allows you to translate django applications directly in a page,
+it adds an extra toolbar to each and lists all the strings that can be translated on that page.
+The changes are saved directly to the according po files.
 
 This allows non-technical people to easily translate django applications and to have context while translating strings
 """
