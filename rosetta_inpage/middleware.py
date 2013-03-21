@@ -4,7 +4,7 @@ from django.template.loader import render_to_string
 from django.template import RequestContext
 from django.utils.html import mark_safe
 
-from rosetta_inpage import hash
+from rosetta_inpage import hash_text
 from rosetta_inpage.conf import EDIT_MODE, MESSAGES, COOKIE_PARAM
 from rosetta_inpage.patches import THREAD_LOCAL_STORAGE
 from rosetta_inpage import utils
@@ -113,7 +113,7 @@ def messages_viewer(list_messages, view_locale=None):
 
         return {
             'show': show_message(msgid, view_locale),
-            'hash': hash(msgid),
+            'hash': hash_text(msgid),
             'source': mark_safe(msg),       # the source message
             'msg': mark_safe(msg_target),   # the translated message
             'translated': is_valid_translation,

@@ -1,6 +1,7 @@
-VERSION = (0, 11, 1)
+VERSION = (0, 0, 1)
 
 import hashlib
+
 
 def get_version():
     if len(VERSION) > 3 and VERSION[3] != 'final':
@@ -8,15 +9,15 @@ def get_version():
     else:
         return '%s.%s.%s' % (VERSION[0], VERSION[1], VERSION[2])
 
-
 __version__ = get_version()
 
 
-def hash(text):
+def hash_text(text):
     """
+    Create a md5 hash for for a message string
 
     @param text:
-    @return:
+    @rtype: str
     """
     encoding = text.encode("UTF-16LE")
     md5 = hashlib.md5()

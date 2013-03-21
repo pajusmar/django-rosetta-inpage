@@ -18,7 +18,7 @@ def _new_ugettext(message):
         messages = getattr(THREAD_LOCAL_STORAGE, MESSAGES)
         messages.add(message)
 
-        #id = hash(message)
+        #id = hash_text(message)
         #return mark_safe('<span contenteditable="false" id="' + id + '">' + original(message) + '</span>')
         locale = to_locale(get_language())
         entry = get_message(message, locale)
