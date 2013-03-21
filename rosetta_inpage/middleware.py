@@ -4,7 +4,7 @@ from django.template.loader import render_to_string
 from django.template import RequestContext
 from django.utils.html import mark_safe
 
-from rosetta_inpage import hash_text
+import rosetta_inpage
 from rosetta_inpage.conf import EDIT_MODE, MESSAGES, COOKIE_PARAM
 from rosetta_inpage.patches import THREAD_LOCAL_STORAGE
 from rosetta_inpage import utils
@@ -69,6 +69,7 @@ class TranslateMiddleware(object):
                 'locales': utils.get_supported_locales(),
                 'catalogs': utils.get_cached_catalogs(),
                 'locale_view': view_locale if view_locale else settings.LANGUAGE_CODE,
+                'version': rosetta_inpage.__version__,
                 'stats': {
                     'count': len(messages),
                     'translated': viewer[1],
@@ -113,7 +114,7 @@ def messages_viewer(list_messages, view_locale=None):
 
         return {
             'show': show_message(msgid, view_locale),
-            'hash': hash_text(msgid),
+            'hash': rosetta_inpage.hash_text(msgid),
             'source': mark_safe(msg),       # the source message
             'msg': mark_safe(msg_target),   # the translated message
             'translated': is_valid_translation,
