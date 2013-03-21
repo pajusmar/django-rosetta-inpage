@@ -35,6 +35,7 @@
      */
     var Inpage = {};
     var Form = {};
+    var Sidebar = {};
 
 
     function initDomElements(){
@@ -68,7 +69,7 @@
             $form.find('input[name=current]').val(current.attr('id'));
             $form.find('input[name=next]').val(next.attr('id'));
 
-            $form.show();
+            Form.show();
             $form.css({
                 'top': pos['top'],
                 'left': pos['left'] + width
@@ -155,6 +156,17 @@
 
         $sidebar.scroll(Form.hide);
         $(document).click(Form.hide);
+        $(document).click(Sidebar.hide);
+    }
+
+
+    /**
+     * Add hover in & out handlers for the sidebar
+     */
+    function initSidebar(){
+        var origWidth = $sidebar.width();
+        $sidebar._origWidth = origWidth;
+        $('#rosetta-inpage-sidebar').hover(Sidebar.show, Sidebar.hide);
     }
 
 
@@ -217,10 +229,38 @@
         }
     }
 
+    function isClickIn(e, parent){
+        if(e.type !== "click"){
+            return false;
+        }
+
+        var target = e.target ? e.target : e.srcElement;
+        var result = false;
+
+        while(target !== null && target !== parent){
+            target = target.parentNode;
+        }
+
+        if(target === parent){
+            result = true;
+        }
+
+        //console.log("Target " + target + ", " + e.type);
+        //console.log("Parent " + parent + ", " + e.type);
+        return result;
+    }
+
+
+    Form.show = function(){
+        $form.show();
+        $sidebar._freeze = true;
+    };
+
 
     Form.hide = function(e){
         $form.hide();
         $sidebar.find('a').removeClass("active");
+        $sidebar._freeze = false;
     };
 
 
@@ -251,6 +291,27 @@
     };
 
 
+    Sidebar.show = function(e){
+        //$sidebar.stop(true).animate({width: origWidth + 'px'});
+        $sidebar.css({width: $sidebar._origWidth + 'px'});
+        $sidebar.find('>div').show();
+        $sidebar.removeClass('wegermee');
+    };
+
+
+    Sidebar.hide = function(e){
+        //console.log("D " + $sidebar._freeze);
+        //console.log("E " + isClickIn(e, $sidebar[0]));
+        //console.log($sidebar._freeze !== true );
+
+        if($sidebar._freeze !== true && !isClickIn(e, $sidebar[0])){
+            //console.log("patat");
+            //$sidebar.stop(true).animate({width: '40px'});
+            $sidebar.css({width: '0px'});
+            $sidebar.find('>div').hide();
+            $sidebar.addClass('wegermee');
+        }
+    };
 
 
 
@@ -268,6 +329,7 @@
         initLinks();
         initForm();
         initPage();
+        initSidebar();
     };
 
     Inpage.reload = function(){
