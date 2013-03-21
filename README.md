@@ -1,6 +1,7 @@
 Rosetta Inpage
 ==============
-Django app on top of Django Rosetta, it enables you to translate in webpages directly. It patches the default `gettext` functionality to capture all messages rendered on a page.
+Django app on top of Django Rosetta, it enables you to translate in webpages directly.
+It patches the default `gettext` functionality to capture all messages rendered on a page.
 
 Installation
 ------------
@@ -9,7 +10,7 @@ Rosetta Inpage requires Django 1.3 or later and Django Rosetta 0.6.8.
 1. Add to your requirements: 
 ```
 django-rosetta==0.6.8
--e git+git@github.com:citylive/django-rosetta-inpage.git#egg=django-rosetta-inpage
+rosetta_inpage==0.0.1
 ```
 
 2. Add to installed apps:
@@ -22,13 +23,7 @@ INSTALLED_APPS = (
 )
 ```
 
-3. Add URL entry to your project's `urls.py`, for example:
-```
-    url(r'^rosetta_inpage/', include('rosetta_inpage.urls')),
-    url(r'^rosetta_inpage/', include('rosetta.urls')),
-```
-
-4. Add the middleware:
+3. Add the middleware:
 ```
 MIDDLEWARE_CLASSES = (
     ...
@@ -37,7 +32,7 @@ MIDDLEWARE_CLASSES = (
 )
 ```
 
-5. Add some settings, `ROSETTA_INPAGE` enables/disables the inpage plugin, set to `False` in production:
+4. Add some settings, `ROSETTA_INPAGE` enables/disables the inpage plugin, set to `False` in production:
 ```
 ##
 ## Rosetta config
@@ -51,9 +46,14 @@ ROSETTA_STORAGE_CLASS = "rosetta.storage.CacheRosettaStorage"
 ROSETTA_INPAGE = True   
 ```
 
-6. Last but not least, apply a magical patch in your settings.  It will patch the default `gettext` functionality:
+5. Last but not least, apply a magical patch in your settings.  It will patch the default `gettext` functionality:
 ```
 from rosetta_inpage.patches import patch_ugettext
 patch_ugettext()
 ```
 
+6. Add URL entry to your project's `urls.py`, for example:
+```
+    url(r'^rosetta_inpage/', include('rosetta_inpage.urls')),
+    url(r'^rosetta_inpage/', include('rosetta.urls')),
+```
