@@ -1,18 +1,45 @@
 # -*- coding: utf-8 -*-
-import copy
 import re
 
 from django.conf import settings
 from django.utils.translation import to_locale
 from django.utils.translation.trans_real import get_language, to_locale
 
-from rosetta import storage
+from rosetta.storage import get_storage
 from rosetta.polib import pofile
 from rosetta.poutil import find_pos
 
+from rosetta_inpage.conf import REQUEST
+from rosetta_inpage.patches import THREAD_LOCAL_STORAGE
 
-# Holds a catalog of locale's in memory without fallback messages
-_catalogs = {}
+
+# Key for the cache, all catalogs are stored in a dictionary with this key
+KEY = 'rosetta-inpage-catalogs'
+
+
+def get_catalogs():
+    """
+    Holds a catalog of locale's in memory without fallback messages
+
+    @return: dict which holds all the the translations in the cache
+    """
+    request = getattr(THREAD_LOCAL_STORAGE, REQUEST, None)
+
+    if not request:
+        raise SystemError('Could not fetch the request object from THREAD_LOCALE_STORAGE')
+
+    if not hasattr(request, '_catalogs'):
+        storage = get_storage(request)
+        print "Houston, we have storage "
+
+        if storage.has(KEY):
+            request._catalogs = storage.get(KEY)
+        else:
+            catalogs = {}
+            storage.set(KEY, catalogs)
+            request._catalogs = catalogs
+
+    return request._catalogs
 
 
 def get_locale_catalog(locale):
@@ -29,7 +56,7 @@ def get_locale_catalog(locale):
         raise ValueError('Invalid locale: %s' % locale)
 
     #print "Locale =", locale, ", Catalogs=", str(len(_catalogs))
-    catalog = _catalogs.get(locale, None)
+    catalog = get_catalogs().get(locale, None)
     if catalog is not None:
         return catalog
 
@@ -51,7 +78,7 @@ def get_locale_catalog(locale):
             catalog.append(entry)
 
     catalog.dict = dict((e.msgid, e) for e in catalog)
-    _catalogs[locale] = catalog
+    get_catalogs()[locale] = catalog
 
     #print "Catalog: ", repr(catalog)
     #print "Dict: ", repr(catalog.dict)
@@ -63,7 +90,8 @@ def get_cached_catalogs():
 
     @return:
     """
-    return  _catalogs.keys()
+    #return  get_catalogs().keys()
+    return []
 
 
 def encode(message):
@@ -75,7 +103,7 @@ def encode(message):
     @return:
     """
     try:
-        return message.decode().encode('utf-8')
+        return message.decode('ASCII').encode('utf-8')
     except UnicodeEncodeError:
         return message.encode('utf-8')
 

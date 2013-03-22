@@ -5,7 +5,7 @@ from django.template import RequestContext
 from django.utils.html import mark_safe
 
 import rosetta_inpage
-from rosetta_inpage.conf import EDIT_MODE, MESSAGES, COOKIE_PARAM
+from rosetta_inpage.conf import (COOKIE_PARAM, EDIT_MODE, MESSAGES, REQUEST)
 from rosetta_inpage.patches import THREAD_LOCAL_STORAGE
 from rosetta_inpage import utils
 
@@ -33,6 +33,7 @@ class TranslateMiddleware(object):
         if self.is_edit_mode(request):
             setattr(THREAD_LOCAL_STORAGE, EDIT_MODE, True)
             setattr(THREAD_LOCAL_STORAGE, MESSAGES, set())
+            setattr(THREAD_LOCAL_STORAGE, REQUEST, request)
         else:
             setattr(THREAD_LOCAL_STORAGE, EDIT_MODE, False)
         return None
