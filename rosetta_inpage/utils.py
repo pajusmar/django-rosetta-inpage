@@ -14,32 +14,12 @@ from rosetta_inpage.patches import THREAD_LOCAL_STORAGE
 
 
 # Key for the cache, all catalogs are stored in a dictionary with this key
-KEY = 'rosetta-inpage-catalogs'
+CACHE_KEY = 'rosetta-inpage-catalog'
+THIRD_PARTY_APPS = False
 
 
-def get_catalogs():
-    """
-    Holds a catalog of locale's in memory without fallback messages
-
-    @return: dict which holds all the the translations in the cache
-    """
-    request = getattr(THREAD_LOCAL_STORAGE, REQUEST, None)
-
-    if not request:
-        raise SystemError('Could not fetch the request object from THREAD_LOCALE_STORAGE')
-
-    if not hasattr(request, '_catalogs'):
-        storage = get_storage(request)
-        print "Houston, we have storage "
-
-        if storage.has(KEY):
-            request._catalogs = storage.get(KEY)
-        else:
-            catalogs = {}
-            storage.set(KEY, catalogs)
-            request._catalogs = catalogs
-
-    return request._catalogs
+def get_cache_key(locale):
+    return "%s-%s" % (CACHE_KEY, locale)
 
 
 def get_locale_catalog(locale):
@@ -55,12 +35,23 @@ def get_locale_catalog(locale):
     if not locale:
         raise ValueError('Invalid locale: %s' % locale)
 
-    #print "Locale =", locale, ", Catalogs=", str(len(_catalogs))
-    catalog = get_catalogs().get(locale, None)
-    if catalog is not None:
+    request = getattr(THREAD_LOCAL_STORAGE, REQUEST, None)
+
+    if not request:
+        raise SystemError('Could not fetch the request object from THREAD_LOCALE_STORAGE')
+
+    cache_key_locale = get_cache_key(locale)
+    if hasattr(request, cache_key_locale):
+        return getattr(request, cache_key_locale)
+
+    storage = get_storage(request)
+
+    if storage.has(cache_key_locale):
+        catalog = storage.get(cache_key_locale)
+        setattr(request, cache_key_locale, catalog)
         return catalog
 
-    files = find_pos(locale, third_party_apps=True)
+    files = find_pos(locale, third_party_apps=THIRD_PARTY_APPS)
     if len(files) == 0:
         raise ValueError('Could not find any po files for locale: %s' % locale)
 
@@ -78,8 +69,13 @@ def get_locale_catalog(locale):
             catalog.append(entry)
 
     catalog.dict = dict((e.msgid, e) for e in catalog)
-    get_catalogs()[locale] = catalog
 
+    # Store the catalog on the request
+    setattr(request, cache_key_locale, catalog)
+    # Store the catalog in the cache
+    storage.set(cache_key_locale, catalog)
+
+    #get_catalogs()[locale] = catalog
     #print "Catalog: ", repr(catalog)
     #print "Dict: ", repr(catalog.dict)
     return catalog
@@ -122,7 +118,7 @@ def get_message(msgid, locale=None):
     return catalog.dict.get(msgid, None)
 
 
-def save_message(msgid, msgtxt, locale, request):
+def save_message(msgid, msgtxt, locale):
     """
     Saves a translated message (msgtxt) to all the po files that have the msgid
 
@@ -137,11 +133,10 @@ def save_message(msgid, msgtxt, locale, request):
         raise ValueError('Invalid translation, unmatched variables')
 
     # file_ = find_pos(langid, project_apps=project_apps, django_apps=django_apps,
-    # third_party_apps=third_party_apps)[int(idx)]
     #stor = storage.get_storage(request)
     files = []
     catalog = get_locale_catalog(locale)
-    pofiles = find_pos(locale, third_party_apps=True)
+    pofiles = find_pos(locale, third_party_apps=THIRD_PARTY_APPS)
 
     #print "Post 1 = ", str(source), ", ", str(target_locale), ", ", str(target_msg)
     #print "Post 1.1 = ", str(settings.SOURCE_LANGUAGE_CODE), ", ", str(request.LANGUAGE_CODE)
@@ -151,7 +146,14 @@ def save_message(msgid, msgtxt, locale, request):
 
     # Update the message in the catalog
     if translated:
+        print "Tis vertaald ... "
         translated.msgstr = msgtxt
+        catalog.dict[msgid] = translated
+        request = getattr(THREAD_LOCAL_STORAGE, REQUEST, None)
+        cache_key_locale = get_cache_key(locale)
+        storage = get_storage(request)
+        print "Store it in the tze cache %s" % cache_key_locale
+        storage.set(cache_key_locale, catalog)
 
     # Save the translation in all the po files that have msgid
     for path in pofiles:

@@ -56,7 +56,7 @@ class MessageView(View):
         else:
             locale = to_locale(get_language())
 
-        files = save_message(source, target_msg, locale, request)
+        files = save_message(source, target_msg, locale)
         return {
             'files': files,
             'msg': target_msg,
@@ -103,7 +103,7 @@ class GitHubView(View):
         username = request.user.username
 
         # 1. Commit the changes to the po files
-        proc = subprocess.Popen(['git', 'commit', '-am', '"Translations by %s"' % username], stdout=subprocess.PIPE)
+        proc = subprocess.Popen(['git', 'commit', '-m', '"Translations by %s"' % username], stdout=subprocess.PIPE)
         commit = proc.communicate()[0]
         #print "Commit=", commit
 
