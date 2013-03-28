@@ -81,15 +81,6 @@ def get_locale_catalog(locale):
     return catalog
 
 
-def get_cached_catalogs():
-    """
-
-    @return:
-    """
-    #return  get_catalogs().keys()
-    return []
-
-
 def encode(message):
     """
     TODO: check encoding source

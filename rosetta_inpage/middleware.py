@@ -68,7 +68,6 @@ class TranslateMiddleware(object):
                 'translate_from': str(settings.SOURCE_LANGUAGE_CODE.split('-')[0]),
                 'translate_to': str(request.LANGUAGE_CODE),
                 'locales': utils.get_supported_locales(),
-                'catalogs': utils.get_cached_catalogs(),
                 'locale_view': view_locale if view_locale else settings.LANGUAGE_CODE,
                 'version': rosetta_inpage.__version__,
                 'stats': {
