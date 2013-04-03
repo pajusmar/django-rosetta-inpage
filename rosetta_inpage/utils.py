@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 import re
+import logging
 
 from django.conf import settings
 from django.utils.translation import to_locale
-from django.utils.translation.trans_real import get_language, to_locale
+from django.utils.translation.trans_real import get_language
 
 from rosetta.storage import get_storage
 from rosetta.polib import pofile
@@ -15,7 +16,9 @@ from rosetta_inpage.patches import THREAD_LOCAL_STORAGE
 
 # Key for the cache, all catalogs are stored in a dictionary with this key
 CACHE_KEY = 'rosetta-inpage-catalog'
-THIRD_PARTY_APPS = False
+THIRD_PARTY_APPS = True
+
+logger = logging.getLogger(__name__)
 
 
 def get_cache_key(locale):
@@ -58,6 +61,7 @@ def get_locale_catalog(locale):
     # This catalog is needed to check whether a message is translated or not, we don't wont the interfere
     # with rosetta's logic ...
     #catalog = copy.deepcopy(pofile(files[0]))
+    logger.info('Creating cached catalog for: %s' % locale)
     catalog = pofile(files[0])
 
     # Join the other po files to the original
@@ -147,6 +151,8 @@ def save_message(msgid, msgtxt, locale):
         storage.set(cache_key_locale, catalog)
 
     # Save the translation in all the po files that have msgid
+    logger.info('Saving msgid %s ' % msgid)
+    saved = False
     for path in pofiles:
         pfile = pofile(path)
         po_entry = pfile.find(msgid)
@@ -154,12 +160,21 @@ def save_message(msgid, msgtxt, locale):
         if po_entry:
             po_entry.msgstr = msgtxt
             po_entry.obsolete = False
+            try:
+                po_entry.flags.remove('fuzzy')
+            except ValueError:
+                pass
             pfile.save()
             files.append(path)
+            saved = True
+            logger.info('Saved to %s' % path)
             #po_filepath, ext = os.path.splitext(p)
             #save_as_mo_filepath = po_filepath + '.mo'
             #file.save_as_mofile(save_as_mo_filepath)
             #print "Msg = ", repr(po_entry), ", ", str(po_entry)
+
+    if not saved:
+        logger.error('Did not save to any file')
 
     return files
 
@@ -204,3 +219,16 @@ def get_supported_locales():
             new_array.append((to_locale(entry[0]), entry[1]))
 
     return new_array
+
+
+def is_translated(entry):
+    """
+    The translated() instance method of an poentry also takes 'fuzzy' into account.  That's not what we want here.
+
+    @param entry:
+    @return:
+    """
+    if entry and entry.msgstr is not u"" or None and not entry.obsolete:
+        return True
+    else:
+        return False

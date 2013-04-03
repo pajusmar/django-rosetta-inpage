@@ -126,7 +126,13 @@
             var currentId = $form.find('input[name=current]').val();
             var nextId = $(jqForm).find('input[name=next]').val();
 
-            $('#' + nextId + ' a').trigger('click');
+            try{
+                $('#' + nextId + ' a').trigger('click');
+            }catch(e){
+                //Its the last one
+                $sidebar.find('a').removeClass("active");
+                Form.hide();
+            }
             $('#' + currentId + ' code[type=msg]').html('<!--' + responseText['msg'] + '-->');
             hideLoading();
         };

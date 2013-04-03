@@ -13,7 +13,7 @@ def _new_ugettext(message):
     mode = getattr(THREAD_LOCAL_STORAGE, EDIT_MODE, False)
 
     if mode:
-        from rosetta_inpage.utils import get_message
+        from rosetta_inpage.utils import get_message, is_translated
         locale = getattr(THREAD_LOCAL_STORAGE, REQUEST_LOCALE)
         messages = getattr(THREAD_LOCAL_STORAGE, MESSAGES)
         messages.add(message)
@@ -22,7 +22,8 @@ def _new_ugettext(message):
         #return mark_safe('<span contenteditable="false" id="' + id + '">' + original(message) + '</span>')
         entry = get_message(message, locale)
 
-        if entry and entry.translated():
+        # if entry and entry.translated():
+        if is_translated(entry):
             return mark_safe(entry.msgstr)
         else:
             return original(message)

@@ -5,9 +5,12 @@ from django.template import RequestContext
 from django.utils.html import mark_safe
 
 import rosetta_inpage
+import logging
 from rosetta_inpage.conf import (COOKIE_PARAM, EDIT_MODE, MESSAGES, REQUEST, REQUEST_LOCALE)
 from rosetta_inpage.patches import THREAD_LOCAL_STORAGE
 from rosetta_inpage import utils
+
+logger = logging.getLogger(__name__)
 
 
 class TranslateMiddleware(object):
@@ -18,7 +21,7 @@ class TranslateMiddleware(object):
     def is_edit_mode(self, request):
         from django.utils.translation.trans_real import get_language, to_locale
         locale = to_locale(get_language())
-        if 'en' in locale:
+        if 'en' in locale or request.path.find('/admin') > -1:
             return False
 
         #return request.GET.get('translate', 'False').lower() == 'true' and request.user.is_staff
@@ -31,6 +34,7 @@ class TranslateMiddleware(object):
         :return:
         """
         if self.is_edit_mode(request):
+            logger.info('Editing mode enabled')
             from django.utils.translation.trans_real import get_language, to_locale
             locale = to_locale(get_language())
 
@@ -102,9 +106,10 @@ def messages_viewer(list_messages, view_locale=None):
 
     def create(msgid):
         entry = catalog.dict.get(msgid, None)
+        # is_valid_translation = True if entry and entry.translated() else False
         # is_valid_translation = True if entry and entry.msgstr is not u"" or None \
         #     and not entry.obsolete else False
-        is_valid_translation = True if entry and entry.translated() else False
+        is_valid_translation = utils.is_translated(entry)
 
         # if translated:
         #    print "\n\n", str(is_valid_translation), ", "
