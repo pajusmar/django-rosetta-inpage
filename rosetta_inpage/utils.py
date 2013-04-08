@@ -10,13 +10,12 @@ from rosetta.storage import get_storage
 from rosetta.polib import pofile
 from rosetta.poutil import find_pos
 
-from rosetta_inpage.conf import REQUEST
+from rosetta_inpage.conf import (REQUEST, THIRD_PARTY_APPS)
 from rosetta_inpage.patches import THREAD_LOCAL_STORAGE
 
 
 # Key for the cache, all catalogs are stored in a dictionary with this key
 CACHE_KEY = 'rosetta-inpage-catalog'
-THIRD_PARTY_APPS = True
 
 logger = logging.getLogger(__name__)
 
@@ -141,13 +140,12 @@ def save_message(msgid, msgtxt, locale):
 
     # Update the message in the catalog
     if translated:
-        print "Tis vertaald ... "
         translated.msgstr = msgtxt
         catalog.dict[msgid] = translated
         request = getattr(THREAD_LOCAL_STORAGE, REQUEST, None)
         cache_key_locale = get_cache_key(locale)
         storage = get_storage(request)
-        print "Store it in the tze cache %s" % cache_key_locale
+        # print "Store it in the tze cache %s" % cache_key_locale
         storage.set(cache_key_locale, catalog)
 
     # Save the translation in all the po files that have msgid

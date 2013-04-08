@@ -172,7 +172,8 @@
     function initSidebar(){
         var origWidth = $sidebar.width();
         $sidebar._origWidth = origWidth;
-        $('#rosetta-inpage-sidebar').hover(Sidebar.show, Sidebar.hide);
+        //$('#rosetta-inpage-sidebar').hover(Sidebar.show, Sidebar.hide);
+        $('#rosetta-inpage-sidebar').hover(Sidebar.show);
     }
 
 
@@ -215,7 +216,7 @@
 
         if(matches_source && matches_newbie && matches_source.length != matches_newbie.length){
             return 406;
-        } else if(matches_source || matches_newbie){
+        } else if((matches_source && !matches_newbie) || (!matches_source && matches_newbie)){
             return 406;
         }
 
@@ -318,10 +319,6 @@
             $sidebar.addClass('wegermee');
         }
     };
-
-
-
-
 
 
 

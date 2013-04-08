@@ -5,7 +5,8 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import View
 from django.utils.translation import trans_real
-from rosetta_inpage.conf import COOKIE_PARAM
+from rosetta.poutil import find_pos
+from rosetta_inpage.conf import (COOKIE_PARAM, THIRD_PARTY_APPS)
 from urlparse import urlparse
 import subprocess
 
@@ -19,14 +20,14 @@ def json_response(view):
     @param view:
     @return:
     """
-    def _json_response(*args, **kwargs):
+    def decorator(*args, **kwargs):
         result = view(*args, **kwargs)
 
         if isinstance(result, HttpResponse):
             return result
         else:
             return HttpResponse(simplejson.dumps(result), content_type='application/json; charset=utf-8')
-    return _json_response
+    return decorator
 
 
 class MessageView(View):
@@ -102,18 +103,40 @@ class GitHubView(View):
         """
         username = request.user.username
 
-        # 1. Commit the changes to the po files
-        proc = subprocess.Popen(['git', 'commit', '-m', '"Translations by %s"' % username], stdout=subprocess.PIPE)
-        commit = proc.communicate()[0]
-        #print "Commit=", commit
-
-        # 2. Grep the current branch name
+        # 1. Grep the current branch name
         #echo $(git branch | grep "*" | sed "s/* //")
         proc = subprocess.Popen('git branch | grep "*" | sed "s/* //"', stdout=subprocess.PIPE, shell=True)
         branch = proc.communicate()[0].rstrip('\n')
         #print "Branch=", branch
 
-        if 'nothing to commit' in commit:
+        #files = find_pos(locale, third_party_apps=THIRD_PARTY_APPS)
+        #from rosetta_inpage.utils import
+
+        # 2. Grab the changes django.po and djangojs.po files
+        proc = subprocess.Popen('git status | grep "django*.po"', stdout=subprocess.PIPE, shell=True)
+        out = proc.communicate()[0].rstrip('\n')
+
+        # Parse all the files and replace the crap
+        replace = lambda item: item.replace('#', '').replace('modified:', '').rstrip().lstrip()
+        raw = out.split('\n')
+        listfiles = []
+
+        for r in raw:
+            rep = replace(r)
+            if rep:
+                listfiles.append(rep)
+
+        # 3. Commit the changes to the po files
+        if len(listfiles) > 0:
+            for a in listfiles:
+                proc = subprocess.Popen(['git', 'add', a], stdout=subprocess.PIPE)
+                out = proc.communicate()[0]
+
+            proc = subprocess.Popen(['git', 'commit', '-m', '"Translations by %s"' % username], stdout=subprocess.PIPE)
+            commit = proc.communicate()[0]
+            #print "Commit=", commit
+            return 200, branch, 'We got it! Commit successful'
+        else:
             return 304, branch, 'nothing to commit'
 
         # 3. Push commit to Github
@@ -123,8 +146,6 @@ class GitHubView(View):
 
         #if 'Everything up-to-date' in push:
         #    return 304, branch, 'everything up-to-date'
-
-        return 200, branch, 'We got it! Commit successful'
 
 
 class ChangeLocaleView(View):

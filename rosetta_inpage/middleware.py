@@ -142,4 +142,5 @@ def messages_viewer(list_messages, view_locale=None):
         if item.get('translated', False):
             translated_count += 1
 
-    return results, translated_count
+    sorted_results = sorted(results, key=lambda entry: entry['show'])
+    return sorted_results, translated_count
