@@ -5,7 +5,7 @@
         <!--<h1>Translate: {{ rosetta_inpage.translate_from|upper }} &raquo; {{ rosetta_inpage.translate_to|upper }}</h1>-->
         <h1>Translate to <strong>{{ rosetta_inpage.translate_to }}</strong></h1>
         <span>Your are viewing in <strong>{{ rosetta_inpage.locale_view }}</strong></span>
-        <p>{% ifequal rosetta_inpage.stats.translated rosetta_inpage.stats.count%}class="translated"{% endifequal %}>{{ rosetta_inpage.stats.translated }} / {{ rosetta_inpage.stats.count }} (<strong>{{ rosetta_inpage.stats.percentage|floatformat:0 }}%</strong>)</p>
+        <p {% ifequal rosetta_inpage.stats.translated rosetta_inpage.stats.count%}class="translated"{% endifequal %}>{{ rosetta_inpage.stats.translated }} / {{ rosetta_inpage.stats.count }} (<strong>{{ rosetta_inpage.stats.percentage|floatformat:0 }}%</strong>)</p>
 
         <ul>
             <li>
