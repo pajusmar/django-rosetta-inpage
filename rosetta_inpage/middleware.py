@@ -121,12 +121,21 @@ def messages_viewer(list_messages, view_locale=None):
         else:
             msg_target = _(msgid)
 
+        if not is_valid_translation:
+            css_class = 'rosetta-inpage-todo'
+        elif entry and 'fuzzy' in entry.flags:
+            css_class = 'rosetta-inpage-fuzzy'
+        else:
+            css_class = 'rosetta-inpage-foo'
+
         return {
             'show': show_message(msgid, view_locale),
             'hash': rosetta_inpage.hash_text(msgid),
             'source': mark_safe(msg),       # the source message
             'msg': mark_safe(msg_target),   # the translated message
             'translated': is_valid_translation,
+            'fuzzy': False if entry and 'fuzzy' not in entry.flags else True,
+            'css_class': css_class
         }
 
     def show_message(msgid, view_locale=None):

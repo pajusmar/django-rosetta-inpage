@@ -244,6 +244,9 @@ $background-white: rgba(255, 255, 255, 0.5);
     &.rosetta-inpage-todo{
       background: $font-color-active;
     }
+    &.rosetta-inpage-fuzzy{
+      background: #3a87ad;;
+    }
   }
 
   li code{

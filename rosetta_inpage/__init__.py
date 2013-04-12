@@ -1,5 +1,5 @@
 VERSION = (0, 0, 7)
-# 0.0.6 is on pypi
+# 0.0.7 is on pypi
 
 import hashlib
 

@@ -39,7 +39,7 @@
             this will do a server request for the image.
             -->
             {% for msg in rosetta_inpage.messages %}
-            <li id="s-{{ msg.hash }}" {% if not msg.translated %}class="rosetta-inpage-todo"{% endif %}>
+            <li id="s-{{ msg.hash }}" class="{{ msg.css_class }}">
                 <a href="javascript:void(0)">{{ msg.show }}</a>
                 <code type="source" data-inpage="{'translated':'{{ msg.translated|lower }}'}"><!--{{ msg.source }}--></code>
                 <code type="msg"><!--{{ msg.msg }}--></code>

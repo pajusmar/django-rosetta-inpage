@@ -122,7 +122,9 @@
             $form.find('textarea').removeAttr('disabled');
             $form.find('input[type="submit"]').attr('value', 'Save').removeAttr('disabled');
 
-            $sidebar.find('.active').parent().removeClass('rosetta-inpage-todo');
+            $sidebar.find('.active').parent()
+                .removeClass('rosetta-inpage-todo')
+                .removeClass('rosetta-inpage-fuzzy');
             var currentId = $form.find('input[name=current]').val();
             var nextId = $(jqForm).find('input[name=next]').val();
 
