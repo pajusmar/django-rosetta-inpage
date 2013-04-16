@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import re
 import logging
+import os
 
 from django.conf import settings
 from django.utils.translation import to_locale
@@ -112,6 +113,15 @@ def get_message(msgid, locale=None):
     return catalog.dict.get(msgid, None)
 
 
+def make_entry_valid(entry):
+    entry.obsolete = False
+    try:
+        entry.flags.remove('fuzzy')
+    except ValueError:
+        pass
+    return entry
+
+
 def save_message(msgid, msgtxt, locale):
     """
     Saves a translated message (msgtxt) to all the po files that have the msgid
@@ -141,11 +151,11 @@ def save_message(msgid, msgtxt, locale):
     # Update the message in the catalog
     if translated:
         translated.msgstr = msgtxt
+        make_entry_valid(translated)
         catalog.dict[msgid] = translated
         request = getattr(THREAD_LOCAL_STORAGE, REQUEST, None)
         cache_key_locale = get_cache_key(locale)
         storage = get_storage(request)
-        # print "Store it in the tze cache %s" % cache_key_locale
         storage.set(cache_key_locale, catalog)
 
     # Save the translation in all the po files that have msgid
@@ -157,13 +167,16 @@ def save_message(msgid, msgtxt, locale):
 
         if po_entry:
             po_entry.msgstr = msgtxt
-            po_entry.obsolete = False
-            try:
-                po_entry.flags.remove('fuzzy')
-            except ValueError:
-                pass
+            make_entry_valid(po_entry)
+
+            # Save the pofile
             pfile.save()
             files.append(path)
+
+            # Save the mofile
+            popath, ext = os.path.splitext(path)
+            pfile.save_as_mofile(popath + ".mo")
+
             saved = True
             logger.info('Saved to %s' % path)
             #po_filepath, ext = os.path.splitext(p)
