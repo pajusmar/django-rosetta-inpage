@@ -131,6 +131,8 @@ class GitHubView(View):
             for a in listfiles:
                 proc = subprocess.Popen(['git', 'add', a], stdout=subprocess.PIPE)
                 out = proc.communicate()[0]
+                proc = subprocess.Popen(['git', 'add', a.replace('.po', '.mo')], stdout=subprocess.PIPE)
+                out = proc.communicate()[0]
 
             proc = subprocess.Popen(['git', 'commit', '-m', '"Translations by %s"' % username], stdout=subprocess.PIPE)
             commit = proc.communicate()[0]
