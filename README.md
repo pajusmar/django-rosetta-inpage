@@ -9,8 +9,8 @@ Rosetta Inpage requires Django 1.3 or later and Django Rosetta 0.6.8.
 
 1. Add to your requirements: 
 ```
-django-rosetta==0.6.8
-rosetta_inpage==0.0.1
+django-rosetta==0.7.1
+rosetta_inpage==0.0.9
 ```
 
 2. Add to installed apps:
