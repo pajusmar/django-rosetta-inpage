@@ -1,3 +1,4 @@
+{% load url from future %}
 {% load i18n %}
 <!--ROSETTA_INPAGE_BEGIN-->
 <div class="rosetta-inpage-sidebar" id="rosetta-inpage-sidebar">
@@ -54,7 +55,7 @@
 </div>
 
 <div class="rosetta-inpage-form" id="rosetta-inpage-form">
-    <form action="{% url rosetta-inpage-message %}" method="post">
+    <form action="{% url 'rosetta-inpage-message' %}" method="post">
         <div class="rosetta-inpage-alert"></div>
         {% csrf_token %}
         <input type="hidden" name="source" value=""/>
